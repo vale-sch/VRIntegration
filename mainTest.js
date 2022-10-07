@@ -20,7 +20,6 @@ let scene = new Scene();
 let renderer = null;
 
 scene.addNode(new SkyboxNode({ url: 'fudgelogo.png' }));
-scene.addNode(cmpCamera);
 function initXR() {
 
     // Adds a helper button to the page that indicates if any XRDevices are
@@ -182,10 +181,10 @@ initXR();
 
 
 
-/*--------------------------------------FUDGE-----------------------------------------------------
+//--------------------------------------FUDGE-----------------------------------------------------
 var f = FudgeCore;
 var ƒAid = FudgeAid;
-let graphId : string  = document.head.querySelector("meta[autoView]").getAttribute("autoView")
+let graphId = document.head.querySelector("meta[autoView]").getAttribute("autoView")
 
 window.addEventListener("load", startInteractiveViewport(graphId));
 let cmpCamera = null;
@@ -195,13 +194,13 @@ let viewport = null;
 let graph = null;
 
 // setup and start interactive viewport
-async function startInteractiveViewport(_graphId) : void  {
+async function startInteractiveViewport(_graphId) {
     // load resources referenced in the link-tag
     await f.Project.loadResourcesFromHTML();
     f.Debug.log("Project:", f.Project.resources);
 
     // get the graph to show from loaded resources
-    graph : ƒ.Graph  = f.Project.resources[_graphId];
+    graph = f.Project.resources[_graphId];
     f.Debug.log("Graph:", graph);
     if (!graph) {
         alert("Nothing to render. Create a graph with at least a mesh, material and probably some light");
@@ -209,20 +208,20 @@ async function startInteractiveViewport(_graphId) : void  {
     }
 
     // setup the viewport
-    : ƒ.ComponentCamera  cmpCamera = new f.ComponentCamera();
-    : HTMLCanvasElement canvas = document.querySelector("canvas");
-     : ƒ.Viewport viewport = new f.Viewport();
+    cmpCamera = new f.ComponentCamera();
+    canvas = document.querySelector("canvas");
+    viewport = new f.Viewport();
     viewport.initialize("InteractiveViewport", graph, cmpCamera, canvas);
     f.Debug.log("Viewport:", viewport);
     // make the camera interactive (complex method in FudgeAid)
-    let cameraOrbit/* : ƒ.Node  = ƒAid.Viewport.expandCameraToInteractiveOrbit(viewport);
+    let cameraOrbit = ƒAid.Viewport.expandCameraToInteractiveOrbit(viewport);
 
     // hide the cursor when interacting, also suppressing right-click menu
     canvas.addEventListener("mousedown", canvas.requestPointerLock);
     canvas.addEventListener("mouseup", function () { document.exitPointerLock(); });
 
     // setup audio
-    let cmpListener/* : ƒ.ComponentAudioListener = new f.ComponentAudioListener();
+    let cmpListener = new f.ComponentAudioListener();
     cmpCamera.node.addComponent(cmpListener);
     f.AudioManager.default.listenWith(cmpListener);
     f.AudioManager.default.listenTo(graph);
