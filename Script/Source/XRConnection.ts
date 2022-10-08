@@ -43,8 +43,6 @@ namespace VRIntegration {
         private onSessionStarted = (session: any): void => {
             // Store the session for use later.
             this.xrSession = session;
-            //@ts-ignore
-
             session.requestReferenceSpace('local')
                 .then((referenceSpace: any) => {
                     this.xrReferenceSpace = referenceSpace;
@@ -52,8 +50,6 @@ namespace VRIntegration {
                 .then(this.setupWebGLLayer) // Create a compatible XRWebGLLayer
                 .then(() => {
                     // Start the render loop
-                    //@ts-ignore
-
                     this.xrSession.requestAnimationFrame(this.onDrawFrame);
                     this.webGLScene.createScene();
                 });

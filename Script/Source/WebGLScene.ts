@@ -87,9 +87,6 @@ namespace VRIntegration {
             // Send the points data to the GPU
             this.gl.enableVertexAttribArray(pointsAttributeLocation);
         }
-        //@ts-ignore
-
-
         public drawScene() {
             /*==================== Drawing ======================== */
             // Clear the canvas

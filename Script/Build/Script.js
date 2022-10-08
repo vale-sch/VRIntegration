@@ -82,7 +82,6 @@ var VRIntegration;
             // Send the points data to the GPU
             this.gl.enableVertexAttribArray(pointsAttributeLocation);
         }
-        //@ts-ignore
         drawScene() {
             /*==================== Drawing ======================== */
             // Clear the canvas
@@ -135,7 +134,6 @@ var VRIntegration;
         onSessionStarted = (session) => {
             // Store the session for use later.
             this.xrSession = session;
-            //@ts-ignore
             session.requestReferenceSpace('local')
                 .then((referenceSpace) => {
                 this.xrReferenceSpace = referenceSpace;
@@ -143,7 +141,6 @@ var VRIntegration;
                 .then(this.setupWebGLLayer) // Create a compatible XRWebGLLayer
                 .then(() => {
                 // Start the render loop
-                //@ts-ignore
                 this.xrSession.requestAnimationFrame(this.onDrawFrame);
                 this.webGLScene.createScene();
             });
