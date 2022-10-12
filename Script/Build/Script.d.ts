@@ -15,6 +15,7 @@ declare namespace VRIntegration {
         private initBuffers;
         private initShaderProgram;
         private loadShader;
+        private translateAmount;
         drawScene(deltaTime: number, pose: any): void;
     }
 }

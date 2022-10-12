@@ -109,40 +109,40 @@ namespace VRIntegration {
 
             const positions = [
                 // Front face
-                0.0, 0.0, 2.0,
-                2.0, 0.0, 2.0,
-                2.0, 2.0, 2.0,
-                0.0, 2.0, 2.0,
+                0.0, 0.0, 1.0,
+                1.0, 0.0, 1.0,
+                1.0, 1.0, 1.0,
+                0.0, 1.0, 1.0,
 
                 // Back face
                 0.0, 0.0, 0.0,
-                0.0, 2.0, 0.0,
-                2.0, 2.0, 0.0,
-                2.0, 0.0, 0.0,
+                0.0, 1.0, 0.0,
+                1.0, 1.0, 0.0,
+                1.0, 0.0, 0.0,
 
                 // Top face
-                0.0, 2.0, 0.0,
-                0.0, 2.0, 2.0,
-                2.0, 2.0, 2.0,
-                2.0, 2.0, 0.0,
+                0.0, 1.0, 0.0,
+                0.0, 1.0, 1.0,
+                1.0, 1.0, 1.0,
+                1.0, 1.0, 0.0,
 
                 // Bottom face
                 0.0, 0.0, 0.0,
-                2.0, 0.0, 0.0,
-                2.0, 0.0, 2.0,
-                0.0, 0.0, 2.0,
+                1.0, 0.0, 0.0,
+                1.0, 0.0, 1.0,
+                0.0, 0.0, 1.0,
 
                 // Right face
-                2.0, 0.0, 0.0,
-                2.0, 2.0, 0.0,
-                2.0, 2.0, 2.0,
-                2.0, 0.0, 2.0,
+                1.0, 0.0, 0.0,
+                1.0, 1.0, 0.0,
+                1.0, 1.0, 1.0,
+                1.0, 0.0, 1.0,
 
                 // Left face
                 0.0, 0.0, 0.0,
-                0.0, 0.0, 2.0,
-                0.0, 2.0, 2.0,
-                0.0, 2.0, 0.0,
+                0.0, 0.0, 1.0,
+                0.0, 1.0, 1.0,
+                0.0, 1.0, 0.0,
             ];
 
             // Now pass the list of positions into WebGL to build the
@@ -249,6 +249,7 @@ namespace VRIntegration {
 
             return shader;
         }
+        private translateAmount: number = -6;
         public drawScene(deltaTime: number, pose: any) {
             this.gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
             this.gl.clearDepth(1.0);                 // Clear everything
@@ -268,8 +269,8 @@ namespace VRIntegration {
 
             const fieldOfView = 45 * Math.PI / 180;   // in radians
             const aspect = this.gl.canvas.clientWidth / this.gl.canvas.clientHeight;
-            const zNear = 0.0001;
-            const zFar = 100000.0;
+            const zNear = 0.01;
+            const zFar = 100.0;
             //@ts-ignore
             const projectionMatrix = mat4.create();
 
@@ -293,11 +294,14 @@ namespace VRIntegration {
 
             // Now move the drawing position a bit to where we want to
             // start drawing the square.
-
+            if (this.translateAmount < 5)
+                this.translateAmount += deltaTime * 0.3
+            else
+                this.translateAmount = -6;
             //@ts-ignore
             mat4.translate(modelViewMatrix,     // destination matrix
                 modelViewMatrix,     // matrix to translate
-                [0.0, 0.0, -8.0]);  // amount to translate
+                [this.translateAmount, 0, -6]);  // amount to translate
             //@ts-ignore
 
             mat4.rotate(modelViewMatrix,  // destination matrix
@@ -336,7 +340,6 @@ namespace VRIntegration {
             // Update the rotation for the next draw
             this.cubeRotation += deltaTime;
 
-            console.log(pose);
 
         }
     }

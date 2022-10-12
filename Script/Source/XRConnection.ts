@@ -69,13 +69,17 @@ namespace VRIntegration {
                     let deltaTime = 0;
                     deltaTime = now - this.then;
                     this.then = now;
-                    this.webGLScene.drawScene(deltaTime, pose);
 
 
                     for (let view of pose.views) {
                         let viewport = glLayer.getViewport(view);
-                        this.gl.viewport(viewport.x, viewport.y, viewport.width, viewport.height);
+
+                        if (view.eye == "left") {
+                            this.gl.viewport(viewport.x * 2, viewport.y, viewport.width * 2, viewport.height);
+                            this.webGLScene.drawScene(deltaTime, pose);
+                        }
                     }
+
                 }
                 // Request the next animation callback
                 this.xrSession.requestAnimationFrame(this.onDrawFrame);
