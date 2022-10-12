@@ -156,8 +156,10 @@ var VRIntegration;
                     this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, glLayer.framebuffer);
                     for (let view of pose.views) {
                         let viewport = glLayer.getViewport(view);
-                        this.gl.viewport(viewport.x, viewport.y, viewport.width, viewport.height);
-                        this.webGLScene.drawScene();
+                        if (view.eye == "left") {
+                            this.gl.viewport(viewport.x * 2, viewport.y, viewport.width * 2, viewport.height);
+                            this.webGLScene.drawScene();
+                        }
                     }
                 }
                 // Request the next animation callback
