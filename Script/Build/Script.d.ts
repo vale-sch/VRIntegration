@@ -3,9 +3,19 @@ declare namespace VRIntegration {
 declare namespace VRIntegration {
     class WebGLScene {
         private gl;
+        private cubeRotation;
+        private then;
+        private time;
+        private vsSource;
+        private fsSource;
+        private shaderProgram;
+        private programInfo;
+        private buffers;
         constructor(gl: WebGLRenderingContext);
-        createScene(): void;
-        drawScene(): void;
+        private initBuffers;
+        private initShaderProgram;
+        private loadShader;
+        drawScene(deltaTime: number, pose: any): void;
     }
 }
 declare namespace VRIntegration {
@@ -13,13 +23,16 @@ declare namespace VRIntegration {
         private gl;
         private glCanvas;
         private webGLScene;
+        private then;
         constructor(canvas: HTMLCanvasElement, gl: WebGLRenderingContext);
         private checkForSupport;
         private beginXRSession;
         private xrSession;
         private xrReferenceSpace;
         private onSessionStarted;
-        onDrawFrame: (_timestamp: number, xrFrame: any) => void;
+        onDrawFrame: (now: number, xrFrame: any) => void;
         private setupWebGLLayer;
+        private endXRSession;
+        private onSessionEnd;
     }
 }

@@ -5,7 +5,7 @@ namespace VRIntegration {
         private gl: WebGLRenderingContext;
         private glCanvas: HTMLCanvasElement;
         private webGLScene: WebGLScene;
-
+        private then: number = 0.0;
         constructor(canvas: HTMLCanvasElement, gl: WebGLRenderingContext) {
             this.gl = gl;
             this.glCanvas = canvas;
@@ -51,11 +51,10 @@ namespace VRIntegration {
                 .then(() => {
                     // Start the render loop
                     this.xrSession.requestAnimationFrame(this.onDrawFrame);
-                    this.webGLScene.createScene();
                 });
         }
 
-        public onDrawFrame = (_timestamp: number, xrFrame: any): void => {
+        public onDrawFrame = (now: number, xrFrame: any): void => {
             // Do we have an active session?
             if (this.xrSession) {
                 let glLayer = this.xrSession.renderState.baseLayer;
@@ -66,11 +65,16 @@ namespace VRIntegration {
                     // scene.updateScene(timestamp, xrFrame);
 
                     this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, glLayer.framebuffer);
+                    now *= 0.001;  // convert to seconds
+                    let deltaTime = 0;
+                    deltaTime = now - this.then;
+                    this.then = now;
+                    this.webGLScene.drawScene(deltaTime, pose);
+
 
                     for (let view of pose.views) {
                         let viewport = glLayer.getViewport(view);
                         this.gl.viewport(viewport.x, viewport.y, viewport.width, viewport.height);
-                        this.webGLScene.drawScene();
                     }
                 }
                 // Request the next animation callback
@@ -94,6 +98,25 @@ namespace VRIntegration {
                 // baseLayer.
                 this.xrSession.updateRenderState({ baseLayer: new XRWebGLLayer(this.xrSession, this.gl) });
             });
+        }
+        private endXRSession(): void {
+            // Do we have an active session?
+            if (this.xrSession) {
+                // End the XR session now.
+                this.xrSession.end().then(this.onSessionEnd);
+            }
+        }
+
+        // Restore the page to normal after an immersive session has ended.
+        private onSessionEnd() {
+            this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
+
+            this.xrSession = null;
+
+            // Ending the session stops executing callbacks passed to the XRSession's
+            // requestAnimationFrame(). To continue rendering, use the window's
+            // requestAnimationFrame() function.
+            // window.requestAnimationFrame(onDrawFrame);
         }
     }
 }
