@@ -1,42 +1,43 @@
 namespace VRIntegration {
     export class WebGLScene {
+
         private gl: WebGLRenderingContext;
         private cubeRotation: number = 0.7;
-        private then: number = 0;
-        private time: number = 0.0;
-        private vsSource: string;
-        private fsSource: string;
         private shaderProgram: any;
         private programInfo: any;
         private buffers: any;
-        constructor(gl: WebGLRenderingContext) {
-            this.gl = gl;
-            this.vsSource = `
-            attribute vec4 aPosition;
-            attribute vec4 aVertexColor;
-    
-            uniform mat4 uModelViewMatrix;
-            uniform mat4 uProjectionMatrix;
-            uniform float uTime;
-    
-            uniform float deltaTime;
-    
-            varying lowp vec4 vColor;
-    
-            void main() {
-                gl_Position = uProjectionMatrix * uModelViewMatrix * aPosition;
-                vColor = vec4(abs(sin(deltaTime)),0.25,abs(cos(deltaTime)),1 ); // RGB Cube
-                //vColor = aVertexColor * abs(sin(deltaTime)); // Face colored cube
-            }
-        `;
-            this.fsSource = `
+
+        /*========== Shaders ==========*/
+        // define shader sources
+        private vsSource: string = `
+        attribute vec4 aPosition;
+        attribute vec4 aVertexColor;
+
+        uniform mat4 uModelViewMatrix;
+        uniform mat4 uProjectionMatrix;
+        uniform float uTime;
+
+        uniform float deltaTime;
+
+        varying lowp vec4 vColor;
+
+        void main() {
+            gl_Position = uProjectionMatrix * uModelViewMatrix * aPosition;
+            vColor = vec4(abs(sin(deltaTime)),0.25,abs(cos(deltaTime)),1 ); // RGB Cube
+        }
+    `;;
+        private fsSource: string = `
         varying lowp vec4 vColor;
         
         void main() {
             gl_FragColor = vColor;
         }
     `;
-            this.shaderProgram = this.initShaderProgram();
+
+        constructor(gl: WebGLRenderingContext) {
+            this.gl = gl;
+
+            this.shaderProgram = this.initShaderProgram(this.gl, this.vsSource, this.fsSource);
             this.programInfo = {
                 program: this.shaderProgram,
                 attribLocations: {
@@ -97,16 +98,13 @@ namespace VRIntegration {
         private initBuffers(gl: WebGLRenderingContext) {
 
             // Create a buffer for the cube's vertex positions.
-
-            const positionBuffer = this.gl.createBuffer();
+            const positionBuffer = gl.createBuffer();
 
             // Select the positionBuffer as the one to apply buffer
             // operations to from here out.
-
             gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
 
             // Now create an array of positions for the cube.
-
             const positions = [
                 // Front face
                 0.0, 0.0, 1.0,
@@ -148,12 +146,10 @@ namespace VRIntegration {
             // Now pass the list of positions into WebGL to build the
             // shape. We do this by creating a Float32Array from the
             // JavaScript array, then use it to fill the current buffer.
-
             gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
 
             // Now set up the colors for the faces. We'll use solid colors
             // for each face.
-
             const faceColors = [
                 [1.0, 1.0, 1.0, 1.0],    // Front face: white
                 [1.0, 0.0, 0.0, 1.0],    // Back face: red
@@ -180,14 +176,12 @@ namespace VRIntegration {
 
             // Build the element array buffer; this specifies the indices
             // into the vertex arrays for each face's vertices.
-
             const indexBuffer = gl.createBuffer();
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
 
             // This array defines each face as two triangles, using the
             // indices into the vertex array to specify each triangle's
             // position.
-
             const indices = [
                 0, 1, 2, 0, 2, 3,    // front
                 4, 5, 6, 4, 6, 7,    // back
@@ -198,7 +192,6 @@ namespace VRIntegration {
             ];
 
             // Now send the element array to GL
-
             gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,
                 new Uint16Array(indices), gl.STATIC_DRAW);
 
@@ -208,49 +201,48 @@ namespace VRIntegration {
                 indices: indexBuffer,
             };
         }
-        private initShaderProgram() {
-            const vertexShader = this.loadShader(this.gl, this.gl.VERTEX_SHADER, this.vsSource);
-            const fragmentShader = this.loadShader(this.gl, this.gl.FRAGMENT_SHADER, this.fsSource);
+
+
+        private initShaderProgram(gl: WebGLRenderingContext, vsSource: any, fsSource: any) {
+            const vertexShader = this.loadShader(gl, gl.VERTEX_SHADER, vsSource);
+            const fragmentShader = this.loadShader(gl, gl.FRAGMENT_SHADER, fsSource);
 
             // Create the shader program
-
-            const shaderProgram = this.gl.createProgram();
-            this.gl.attachShader(shaderProgram, vertexShader);
-            this.gl.attachShader(shaderProgram, fragmentShader);
-            this.gl.linkProgram(shaderProgram);
+            const shaderProgram = gl.createProgram();
+            gl.attachShader(shaderProgram, vertexShader);
+            gl.attachShader(shaderProgram, fragmentShader);
+            gl.linkProgram(shaderProgram);
 
             // If creating the shader program failed, alert
-
-            if (!this.gl.getProgramParameter(shaderProgram, this.gl.LINK_STATUS)) {
-                alert('Unable to initialize the shader program: ' + this.gl.getProgramInfoLog(shaderProgram));
+            if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+                alert('Unable to initialize the shader program: ' + gl.getProgramInfoLog(shaderProgram));
                 return null;
             }
-
             return shaderProgram;
         }
+
+
+
         private loadShader(gl: any, type: any, source: any) {
             const shader = gl.createShader(type);
-
             // Send the source to the shader object
-
             gl.shaderSource(shader, source);
-
             // Compile the shader program
-
             gl.compileShader(shader);
-
             // See if it compiled successfully
-
             if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
                 alert('An error occurred compiling the shaders: ' + gl.getShaderInfoLog(shader));
                 gl.deleteShader(shader);
                 return null;
             }
-
             return shader;
         }
+
+
+
         private translateAmount: number = -6;
-        public drawScene(deltaTime: number, pose: any) {
+
+        public drawScene(deltaTime: number, then: number, pose: any) {
             this.gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
             this.gl.clearDepth(1.0);                 // Clear everything
             this.gl.enable(this.gl.DEPTH_TEST);           // Enable depth testing
@@ -288,8 +280,6 @@ namespace VRIntegration {
             // Set the drawing position to the "identity" point, which is
             // the center of the scene.
             //@ts-ignore
-
-
             const modelViewMatrix = mat4.create();
 
             // Now move the drawing position a bit to where we want to
@@ -298,21 +288,17 @@ namespace VRIntegration {
                 this.translateAmount += deltaTime * 0.3
             else
                 this.translateAmount = -6;
+
             //@ts-ignore
             mat4.translate(modelViewMatrix,     // destination matrix
                 modelViewMatrix,     // matrix to translate
                 [this.translateAmount, 0, -6]);  // amount to translate
-            //@ts-ignore
 
+            //@ts-ignore
             mat4.rotate(modelViewMatrix,  // destination matrix
                 modelViewMatrix,  // matrix to rotate
                 this.cubeRotation,     // amount to rotate in radians
                 [0, 1, 0]);
-            //@ts-ignore
-
-
-
-
             // Tell WebGL which indices to use to index the vertices
             this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.buffers.indices);
 
@@ -328,7 +314,8 @@ namespace VRIntegration {
                 this.programInfo.uniformLocations.modelViewMatrix,
                 false,
                 modelViewMatrix);
-            this.gl.uniform1f(this.programInfo.uniformLocations.deltaTime, this.then);
+            //console.log(this.then);
+            this.gl.uniform1f(this.programInfo.uniformLocations.deltaTime, then);
 
             {
                 const vertexCount = 36;
@@ -339,8 +326,6 @@ namespace VRIntegration {
 
             // Update the rotation for the next draw
             this.cubeRotation += deltaTime;
-
-
         }
     }
 }

@@ -12,41 +12,39 @@ var VRIntegration;
     class WebGLScene {
         gl;
         cubeRotation = 0.7;
-        then = 0;
-        time = 0.0;
-        vsSource;
-        fsSource;
         shaderProgram;
         programInfo;
         buffers;
-        constructor(gl) {
-            this.gl = gl;
-            this.vsSource = `
-            attribute vec4 aPosition;
-            attribute vec4 aVertexColor;
-    
-            uniform mat4 uModelViewMatrix;
-            uniform mat4 uProjectionMatrix;
-            uniform float uTime;
-    
-            uniform float deltaTime;
-    
-            varying lowp vec4 vColor;
-    
-            void main() {
-                gl_Position = uProjectionMatrix * uModelViewMatrix * aPosition;
-                vColor = vec4(abs(sin(deltaTime)),0.25,abs(cos(deltaTime)),1 ); // RGB Cube
-                //vColor = aVertexColor * abs(sin(deltaTime)); // Face colored cube
-            }
-        `;
-            this.fsSource = `
+        /*========== Shaders ==========*/
+        // define shader sources
+        vsSource = `
+        attribute vec4 aPosition;
+        attribute vec4 aVertexColor;
+
+        uniform mat4 uModelViewMatrix;
+        uniform mat4 uProjectionMatrix;
+        uniform float uTime;
+
+        uniform float deltaTime;
+
+        varying lowp vec4 vColor;
+
+        void main() {
+            gl_Position = uProjectionMatrix * uModelViewMatrix * aPosition;
+            vColor = vec4(abs(sin(deltaTime)),0.25,abs(cos(deltaTime)),1 ); // RGB Cube
+        }
+    `;
+        ;
+        fsSource = `
         varying lowp vec4 vColor;
         
         void main() {
             gl_FragColor = vColor;
         }
     `;
-            this.shaderProgram = this.initShaderProgram();
+        constructor(gl) {
+            this.gl = gl;
+            this.shaderProgram = this.initShaderProgram(this.gl, this.vsSource, this.fsSource);
             this.programInfo = {
                 program: this.shaderProgram,
                 attribLocations: {
@@ -87,7 +85,7 @@ var VRIntegration;
         }
         initBuffers(gl) {
             // Create a buffer for the cube's vertex positions.
-            const positionBuffer = this.gl.createBuffer();
+            const positionBuffer = gl.createBuffer();
             // Select the positionBuffer as the one to apply buffer
             // operations to from here out.
             gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
@@ -171,17 +169,17 @@ var VRIntegration;
                 indices: indexBuffer,
             };
         }
-        initShaderProgram() {
-            const vertexShader = this.loadShader(this.gl, this.gl.VERTEX_SHADER, this.vsSource);
-            const fragmentShader = this.loadShader(this.gl, this.gl.FRAGMENT_SHADER, this.fsSource);
+        initShaderProgram(gl, vsSource, fsSource) {
+            const vertexShader = this.loadShader(gl, gl.VERTEX_SHADER, vsSource);
+            const fragmentShader = this.loadShader(gl, gl.FRAGMENT_SHADER, fsSource);
             // Create the shader program
-            const shaderProgram = this.gl.createProgram();
-            this.gl.attachShader(shaderProgram, vertexShader);
-            this.gl.attachShader(shaderProgram, fragmentShader);
-            this.gl.linkProgram(shaderProgram);
+            const shaderProgram = gl.createProgram();
+            gl.attachShader(shaderProgram, vertexShader);
+            gl.attachShader(shaderProgram, fragmentShader);
+            gl.linkProgram(shaderProgram);
             // If creating the shader program failed, alert
-            if (!this.gl.getProgramParameter(shaderProgram, this.gl.LINK_STATUS)) {
-                alert('Unable to initialize the shader program: ' + this.gl.getProgramInfoLog(shaderProgram));
+            if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+                alert('Unable to initialize the shader program: ' + gl.getProgramInfoLog(shaderProgram));
                 return null;
             }
             return shaderProgram;
@@ -201,7 +199,7 @@ var VRIntegration;
             return shader;
         }
         translateAmount = -6;
-        drawScene(deltaTime, pose) {
+        drawScene(deltaTime, then, pose) {
             this.gl.clearColor(0.0, 0.0, 0.0, 1.0); // Clear to black, fully opaque
             this.gl.clearDepth(1.0); // Clear everything
             this.gl.enable(this.gl.DEPTH_TEST); // Enable depth testing
@@ -243,7 +241,6 @@ var VRIntegration;
             modelViewMatrix, // matrix to rotate
             this.cubeRotation, // amount to rotate in radians
             [0, 1, 0]);
-            //@ts-ignore
             // Tell WebGL which indices to use to index the vertices
             this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.buffers.indices);
             // Tell WebGL to use our program when drawing  
@@ -251,7 +248,8 @@ var VRIntegration;
             // Set the shader uniforms  
             this.gl.uniformMatrix4fv(this.programInfo.uniformLocations.projectionMatrix, false, projectionMatrix);
             this.gl.uniformMatrix4fv(this.programInfo.uniformLocations.modelViewMatrix, false, modelViewMatrix);
-            this.gl.uniform1f(this.programInfo.uniformLocations.deltaTime, this.then);
+            //console.log(this.then);
+            this.gl.uniform1f(this.programInfo.uniformLocations.deltaTime, then);
             {
                 const vertexCount = 36;
                 const type = this.gl.UNSIGNED_SHORT;
@@ -277,11 +275,17 @@ var VRIntegration;
             this.webGLScene = new VRIntegration.WebGLScene(this.gl);
             this.checkForSupport();
         }
+        // checking for VR-capable devices
         checkForSupport() {
+            //@ts-ignore
             navigator.xr.isSessionSupported('immersive-vr').then((supported) => {
                 if (supported) {
                     var enterXrBtn = document.createElement("button");
                     enterXrBtn.innerHTML = "Enter VR";
+                    enterXrBtn.style.position = "absolute";
+                    enterXrBtn.style.left = "35%";
+                    enterXrBtn.style.top = "40%";
+                    enterXrBtn.style.fontSize = "200px";
                     enterXrBtn.addEventListener("click", this.beginXRSession);
                     document.body.appendChild(enterXrBtn);
                 }
@@ -290,9 +294,10 @@ var VRIntegration;
                 }
             });
         }
+        // beginXRSession must be called within a user gesture event
+        // like click or touch button when requesting an immersive session.
         beginXRSession = async () => {
-            // requestSession must be called within a user gesture event
-            // like click or touch when requesting an immersive session.
+            //@ts-ignore
             var session = await navigator.xr.requestSession('immersive-vr');
             this.onSessionStarted(session);
         };
@@ -311,6 +316,17 @@ var VRIntegration;
                 this.xrSession.requestAnimationFrame(this.onDrawFrame);
             });
         };
+        //making the session immersive 
+        setupWebGLLayer = async () => {
+            // Make sure the canvas context we want to use is compatible with the current xr device.
+            //@ts-ignore
+            return this.gl.makeXRCompatible().then(() => {
+                // The content that will be shown on the device is defined by the session's  baseLayer.
+                //@ts-ignore
+                this.xrSession.updateRenderState({ baseLayer: new XRWebGLLayer(this.xrSession, this.gl) });
+            });
+        };
+        //this method is called every frame 
         onDrawFrame = (now, xrFrame) => {
             // Do we have an active session?
             if (this.xrSession) {
@@ -328,7 +344,8 @@ var VRIntegration;
                         let viewport = glLayer.getViewport(view);
                         if (view.eye == "left") {
                             this.gl.viewport(viewport.x * 2, viewport.y, viewport.width * 2, viewport.height);
-                            this.webGLScene.drawScene(deltaTime, pose);
+                            //calling the webGl Content Scene to draw 
+                            this.webGLScene.drawScene(deltaTime, this.then, pose);
                         }
                     }
                 }
@@ -342,14 +359,8 @@ var VRIntegration;
                 //window.requestAnimationFrame(this.onDrawFrame(xrFrame, xrSession, xrReferenceSpace, glCanvas));
             }
         };
-        setupWebGLLayer = async () => {
-            // Make sure the canvas context we want to use is compatible with the current xr device.
-            return this.gl.makeXRCompatible().then(() => {
-                // The content that will be shown on the device is defined by the session's
-                // baseLayer.
-                this.xrSession.updateRenderState({ baseLayer: new XRWebGLLayer(this.xrSession, this.gl) });
-            });
-        };
+        //call this method if you want to end the immersive session
+        //@ts-ignore
         endXRSession() {
             // Do we have an active session?
             if (this.xrSession) {

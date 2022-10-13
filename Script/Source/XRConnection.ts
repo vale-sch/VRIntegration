@@ -6,6 +6,9 @@ namespace VRIntegration {
         private glCanvas: HTMLCanvasElement;
         private webGLScene: WebGLScene;
         private then: number = 0.0;
+
+
+
         constructor(canvas: HTMLCanvasElement, gl: WebGLRenderingContext) {
             this.gl = gl;
             this.glCanvas = canvas;
@@ -13,33 +16,41 @@ namespace VRIntegration {
 
             this.checkForSupport();
         }
+
+
+        // checking for VR-capable devices
         private checkForSupport() {
-            navigator.xr.isSessionSupported('immersive-vr').then((supported) => {
+            //@ts-ignore
+            navigator.xr.isSessionSupported('immersive-vr').then((supported: any) => {
                 if (supported) {
                     var enterXrBtn = document.createElement("button");
                     enterXrBtn.innerHTML = "Enter VR";
+                    enterXrBtn.style.position = "absolute";
+                    enterXrBtn.style.left = "35%";
+                    enterXrBtn.style.top = "40%";
+                    enterXrBtn.style.fontSize = "200px";
                     enterXrBtn.addEventListener("click", this.beginXRSession);
                     document.body.appendChild(enterXrBtn);
                 } else {
                     console.log("Session not supported");
                 }
             });
-
         }
 
 
+
+        // beginXRSession must be called within a user gesture event
+        // like click or touch button when requesting an immersive session.
         private beginXRSession = async (): Promise<void> => {
-            // requestSession must be called within a user gesture event
-            // like click or touch when requesting an immersive session.
+            //@ts-ignore
             var session = await navigator.xr.requestSession('immersive-vr');
             this.onSessionStarted(session);
-
-
-
         }
+
+
+
         private xrSession: any = null;
         private xrReferenceSpace: any = null;
-
         private onSessionStarted = (session: any): void => {
             // Store the session for use later.
             this.xrSession = session;
@@ -54,6 +65,22 @@ namespace VRIntegration {
                 });
         }
 
+
+
+        //making the session immersive 
+        private setupWebGLLayer = async (): Promise<void> => {
+            // Make sure the canvas context we want to use is compatible with the current xr device.
+            //@ts-ignore
+            return this.gl.makeXRCompatible().then(() => {
+                // The content that will be shown on the device is defined by the session's  baseLayer.
+                //@ts-ignore
+                this.xrSession.updateRenderState({ baseLayer: new XRWebGLLayer(this.xrSession, this.gl) });
+            });
+        }
+
+
+
+        //this method is called every frame 
         public onDrawFrame = (now: number, xrFrame: any): void => {
             // Do we have an active session?
             if (this.xrSession) {
@@ -70,39 +97,28 @@ namespace VRIntegration {
                     deltaTime = now - this.then;
                     this.then = now;
 
-
                     for (let view of pose.views) {
                         let viewport = glLayer.getViewport(view);
-
                         if (view.eye == "left") {
                             this.gl.viewport(viewport.x * 2, viewport.y, viewport.width * 2, viewport.height);
-                            this.webGLScene.drawScene(deltaTime, pose);
+                            //calling the webGl Content Scene to draw 
+                            this.webGLScene.drawScene(deltaTime, this.then, pose);
                         }
                     }
-
                 }
                 // Request the next animation callback
                 this.xrSession.requestAnimationFrame(this.onDrawFrame);
             } else {
                 // No session available, so render a default mono view.
                 this.gl.viewport(0, 0, this.glCanvas.width, this.glCanvas.height);
-
                 // Request the next window callback
                 //window.requestAnimationFrame(this.onDrawFrame(xrFrame, xrSession, xrReferenceSpace, glCanvas));
             }
         }
 
 
-
-
-        private setupWebGLLayer = async (): Promise<void> => {
-            // Make sure the canvas context we want to use is compatible with the current xr device.
-            return this.gl.makeXRCompatible().then(() => {
-                // The content that will be shown on the device is defined by the session's
-                // baseLayer.
-                this.xrSession.updateRenderState({ baseLayer: new XRWebGLLayer(this.xrSession, this.gl) });
-            });
-        }
+        //call this method if you want to end the immersive session
+        //@ts-ignore
         private endXRSession(): void {
             // Do we have an active session?
             if (this.xrSession) {
