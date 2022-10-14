@@ -92,6 +92,8 @@ namespace VRIntegration {
                     // scene.updateScene(timestamp, xrFrame);
 
                     this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, glLayer.framebuffer);
+                    this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+
                     now *= 0.001;  // convert to seconds
                     let deltaTime = 0;
                     deltaTime = now - this.then;
@@ -100,7 +102,7 @@ namespace VRIntegration {
                     for (let view of pose.views) {
                         let viewport = glLayer.getViewport(view);
                         console.log(viewport);
-                        this.gl.viewport(viewport.x + view.eye == "left" ? viewport.width / 2 : viewport.width, viewport.y, viewport.width, viewport.height);
+                        this.gl.viewport(viewport.x, viewport.y, viewport.width, viewport.height);
                         //calling the webGl Content Scene to draw 
                         this.webGLScene.drawScene(deltaTime, this.then, pose);
 

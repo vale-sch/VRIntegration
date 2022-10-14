@@ -200,12 +200,12 @@ var VRIntegration;
         }
         translateAmount = -6;
         drawScene(deltaTime, then, pose) {
-            this.gl.clearColor(0.0, 0.0, 0.0, 0.5); // Clear to black, fully opaque
-            this.gl.clearDepth(1.0); // Clear everything
+            // this.gl.clearColor(0.0, 0.0, 0.0, 0.5);  // Clear to black, fully opaque
+            // this.gl.clearDepth(1.0);                 // Clear everything
             this.gl.enable(this.gl.DEPTH_TEST); // Enable depth testing
             this.gl.depthFunc(this.gl.LEQUAL); // Near things obscure far things
             // Clear the canvas before we start drawing on it.
-            this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+            //  this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
             //console.log(pose);
             // Create a perspective matrix, a special matrix that is
             // used to simulate the distortion of perspective in a camera.
@@ -337,6 +337,7 @@ var VRIntegration;
                     // Run imaginary 3D engine's simulation to step forward physics, animations, etc.
                     // scene.updateScene(timestamp, xrFrame);
                     this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, glLayer.framebuffer);
+                    this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
                     now *= 0.001; // convert to seconds
                     let deltaTime = 0;
                     deltaTime = now - this.then;
@@ -344,7 +345,7 @@ var VRIntegration;
                     for (let view of pose.views) {
                         let viewport = glLayer.getViewport(view);
                         console.log(viewport);
-                        this.gl.viewport(viewport.x + view.eye == "left" ? viewport.width / 2 : viewport.width, viewport.y, viewport.width, viewport.height);
+                        this.gl.viewport(viewport.x, viewport.y, viewport.width, viewport.height);
                         //calling the webGl Content Scene to draw 
                         this.webGLScene.drawScene(deltaTime, this.then, pose);
                     }
