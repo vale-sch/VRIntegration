@@ -23,6 +23,7 @@ declare namespace VRIntegration {
         private glCanvas;
         private webGLScene;
         private then;
+        private enterXRButton;
         constructor(canvas: HTMLCanvasElement, gl: WebGLRenderingContext);
         private checkForSupport;
         private beginXRSession;

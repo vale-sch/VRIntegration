@@ -6,7 +6,7 @@ namespace VRIntegration {
         private glCanvas: HTMLCanvasElement;
         private webGLScene: WebGLScene;
         private then: number = 0.0;
-
+        private enterXRButton: HTMLButtonElement = null;
 
 
         constructor(canvas: HTMLCanvasElement, gl: WebGLRenderingContext) {
@@ -23,14 +23,14 @@ namespace VRIntegration {
             //@ts-ignore
             navigator.xr.isSessionSupported('immersive-vr').then((supported: any) => {
                 if (supported) {
-                    var enterXrBtn = document.createElement("button");
-                    enterXrBtn.innerHTML = "Enter VR";
-                    enterXrBtn.style.position = "absolute";
-                    enterXrBtn.style.left = "35%";
-                    enterXrBtn.style.top = "40%";
-                    enterXrBtn.style.fontSize = "200px";
-                    enterXrBtn.addEventListener("click", this.beginXRSession);
-                    document.body.appendChild(enterXrBtn);
+                    this.enterXRButton = document.createElement("button");
+                    this.enterXRButton.innerHTML = "Enter VR";
+                    this.enterXRButton.style.position = "absolute";
+                    this.enterXRButton.style.left = "35%";
+                    this.enterXRButton.style.top = "40%";
+                    this.enterXRButton.style.fontSize = "200px";
+                    this.enterXRButton.addEventListener("click", this.beginXRSession);
+                    document.body.appendChild(this.enterXRButton);
                 } else {
                     console.log("Session not supported");
                 }
@@ -44,6 +44,7 @@ namespace VRIntegration {
         private beginXRSession = async (): Promise<void> => {
             //@ts-ignore
             var session = await navigator.xr.requestSession('immersive-vr');
+            document.body.removeChild(this.enterXRButton);
             this.onSessionStarted(session);
         }
 
@@ -101,8 +102,7 @@ namespace VRIntegration {
 
                     for (let view of pose.views) {
                         let viewport = glLayer.getViewport(view);
-                        console.log(viewport);
-                        this.gl.viewport(viewport.x, viewport.y, viewport.width, viewport.height);
+                        this.gl.viewport(viewport.x, viewport.y, viewport.width * 2, viewport.height);
                         //calling the webGl Content Scene to draw 
                         this.webGLScene.drawScene(deltaTime, this.then, pose);
 
