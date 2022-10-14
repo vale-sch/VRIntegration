@@ -99,11 +99,11 @@ namespace VRIntegration {
 
                     for (let view of pose.views) {
                         let viewport = glLayer.getViewport(view);
-                        if (view.eye == "left") {
-                            this.gl.viewport(viewport.x * 2, viewport.y, viewport.width * 2, viewport.height);
-                            //calling the webGl Content Scene to draw 
-                            this.webGLScene.drawScene(deltaTime, this.then, pose);
-                        }
+                        console.log(viewport);
+                        this.gl.viewport(viewport.x + view.eye == "left" ? viewport.width / 2 : viewport.width, viewport.y, viewport.width, viewport.height);
+                        //calling the webGl Content Scene to draw 
+                        this.webGLScene.drawScene(deltaTime, this.then, pose);
+
                     }
                 }
                 // Request the next animation callback

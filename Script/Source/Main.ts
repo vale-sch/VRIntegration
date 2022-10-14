@@ -3,7 +3,7 @@ namespace VRIntegration {
 
     function checkForSupport(): void {
         let canvas: HTMLCanvasElement = <HTMLCanvasElement>document.querySelector("canvas");
-        new XRConnection(canvas, <WebGLRenderingContext>canvas.getContext("webgl"));
+        new XRConnection(canvas, <WebGLRenderingContext>canvas.getContext("webgl2"));
     }
 }
 

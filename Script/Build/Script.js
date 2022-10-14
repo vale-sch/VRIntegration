@@ -4,7 +4,7 @@ var VRIntegration;
     window.addEventListener("load", checkForSupport);
     function checkForSupport() {
         let canvas = document.querySelector("canvas");
-        new VRIntegration.XRConnection(canvas, canvas.getContext("webgl"));
+        new VRIntegration.XRConnection(canvas, canvas.getContext("webgl2"));
     }
 })(VRIntegration || (VRIntegration = {}));
 var VRIntegration;
@@ -200,12 +200,13 @@ var VRIntegration;
         }
         translateAmount = -6;
         drawScene(deltaTime, then, pose) {
-            this.gl.clearColor(0.0, 0.0, 0.0, 1.0); // Clear to black, fully opaque
+            this.gl.clearColor(0.0, 0.0, 0.0, 0.5); // Clear to black, fully opaque
             this.gl.clearDepth(1.0); // Clear everything
             this.gl.enable(this.gl.DEPTH_TEST); // Enable depth testing
             this.gl.depthFunc(this.gl.LEQUAL); // Near things obscure far things
             // Clear the canvas before we start drawing on it.
             this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+            //console.log(pose);
             // Create a perspective matrix, a special matrix that is
             // used to simulate the distortion of perspective in a camera.
             // Our field of view is 45 degrees, with a width/height
@@ -342,11 +343,10 @@ var VRIntegration;
                     this.then = now;
                     for (let view of pose.views) {
                         let viewport = glLayer.getViewport(view);
-                        if (view.eye == "left") {
-                            this.gl.viewport(viewport.x * 2, viewport.y, viewport.width * 2, viewport.height);
-                            //calling the webGl Content Scene to draw 
-                            this.webGLScene.drawScene(deltaTime, this.then, pose);
-                        }
+                        console.log(viewport);
+                        this.gl.viewport(viewport.x + view.eye == "left" ? viewport.width / 2 : viewport.width, viewport.y, viewport.width, viewport.height);
+                        //calling the webGl Content Scene to draw 
+                        this.webGLScene.drawScene(deltaTime, this.then, pose);
                     }
                 }
                 // Request the next animation callback
