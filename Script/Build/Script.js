@@ -199,7 +199,7 @@ var VRIntegration;
             return shader;
         }
         translateAmount = -6;
-        drawScene(deltaTime, then, pose) {
+        drawScene(deltaTime, then) {
             // this.gl.clearColor(0.0, 0.0, 0.0, 0.5);  // Clear to black, fully opaque
             // this.gl.clearDepth(1.0);                 // Clear everything
             this.gl.enable(this.gl.DEPTH_TEST); // Enable depth testing
@@ -279,7 +279,6 @@ var VRIntegration;
         }
         // checking for VR-capable devices
         checkForSupport() {
-            //@ts-ignore
             navigator.xr.isSessionSupported('immersive-vr').then((supported) => {
                 if (supported) {
                     this.enterXRButton = document.createElement("button");
@@ -296,45 +295,32 @@ var VRIntegration;
                 }
             });
         }
+        xrSession = null;
+        xrReferenceSpace = null;
         // beginXRSession must be called within a user gesture event
         // like click or touch button when requesting an immersive session.
         beginXRSession = async () => {
-            //@ts-ignore
-            var session = await navigator.xr.requestSession('immersive-vr');
+            let session = await navigator.xr.requestSession('immersive-vr');
             document.body.removeChild(this.enterXRButton);
-            this.onSessionStarted(session);
-        };
-        xrSession = null;
-        xrReferenceSpace = null;
-        onSessionStarted = (session) => {
-            // Store the session for use later.
             this.xrSession = session;
-            session.requestReferenceSpace('local')
+            await session.requestReferenceSpace('local')
                 .then((referenceSpace) => {
                 this.xrReferenceSpace = referenceSpace;
-            })
-                .then(this.setupWebGLLayer) // Create a compatible XRWebGLLayer
-                .then(() => {
-                // Start the render loop
-                this.xrSession.requestAnimationFrame(this.onDrawFrame);
             });
-        };
-        //making the session immersive 
-        setupWebGLLayer = async () => {
-            // Make sure the canvas context we want to use is compatible with the current xr device.
-            //@ts-ignore
-            return this.gl.makeXRCompatible().then(() => {
+            this.gl.makeXRCompatible().then(() => {
                 // The content that will be shown on the device is defined by the session's  baseLayer.
-                //@ts-ignore
                 this.xrSession.updateRenderState({ baseLayer: new XRWebGLLayer(this.xrSession, this.gl) });
             });
+            // Start the render loop
+            this.xrSession.requestAnimationFrame(this.onDrawFrame);
         };
-        //this method is called every frame 
+        //method is called every frame 
         onDrawFrame = (now, xrFrame) => {
             // Do we have an active session?
             if (this.xrSession) {
                 let glLayer = this.xrSession.renderState.baseLayer;
                 let pose = xrFrame.getViewerPose(this.xrReferenceSpace);
+                console.log(xrFrame);
                 if (pose) {
                     // Run imaginary 3D engine's simulation to step forward physics, animations, etc.
                     // scene.updateScene(timestamp, xrFrame);
@@ -348,7 +334,7 @@ var VRIntegration;
                         let viewport = glLayer.getViewport(view);
                         this.gl.viewport(viewport.x, viewport.y, viewport.width * 2, viewport.height);
                         //calling the webGl Content Scene to draw 
-                        this.webGLScene.drawScene(deltaTime, this.then, pose);
+                        this.webGLScene.drawScene(deltaTime, this.then);
                     }
                 }
                 // Request the next animation callback
@@ -361,24 +347,6 @@ var VRIntegration;
                 //window.requestAnimationFrame(this.onDrawFrame(xrFrame, xrSession, xrReferenceSpace, glCanvas));
             }
         };
-        //call this method if you want to end the immersive session
-        //@ts-ignore
-        endXRSession() {
-            // Do we have an active session?
-            if (this.xrSession) {
-                // End the XR session now.
-                this.xrSession.end().then(this.onSessionEnd);
-            }
-        }
-        // Restore the page to normal after an immersive session has ended.
-        onSessionEnd() {
-            this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
-            this.xrSession = null;
-            // Ending the session stops executing callbacks passed to the XRSession's
-            // requestAnimationFrame(). To continue rendering, use the window's
-            // requestAnimationFrame() function.
-            // window.requestAnimationFrame(onDrawFrame);
-        }
     }
     VRIntegration.XRConnection = XRConnection;
 })(VRIntegration || (VRIntegration = {}));

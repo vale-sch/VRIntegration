@@ -242,7 +242,7 @@ namespace VRIntegration {
 
         private translateAmount: number = -6;
 
-        public drawScene(deltaTime: number, then: number, pose: any) {
+        public drawScene(deltaTime: number, then: number) {
             // this.gl.clearColor(0.0, 0.0, 0.0, 0.5);  // Clear to black, fully opaque
             // this.gl.clearDepth(1.0);                 // Clear everything
             this.gl.enable(this.gl.DEPTH_TEST);           // Enable depth testing

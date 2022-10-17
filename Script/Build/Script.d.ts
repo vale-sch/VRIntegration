@@ -1,3 +1,4 @@
+/// <reference types="webxr" />
 declare namespace VRIntegration {
 }
 declare namespace VRIntegration {
@@ -14,7 +15,7 @@ declare namespace VRIntegration {
         private initShaderProgram;
         private loadShader;
         private translateAmount;
-        drawScene(deltaTime: number, then: number, pose: any): void;
+        drawScene(deltaTime: number, then: number): void;
     }
 }
 declare namespace VRIntegration {
@@ -26,13 +27,9 @@ declare namespace VRIntegration {
         private enterXRButton;
         constructor(canvas: HTMLCanvasElement, gl: WebGLRenderingContext);
         private checkForSupport;
-        private beginXRSession;
         private xrSession;
         private xrReferenceSpace;
-        private onSessionStarted;
-        private setupWebGLLayer;
-        onDrawFrame: (now: number, xrFrame: any) => void;
-        private endXRSession;
-        private onSessionEnd;
+        private beginXRSession;
+        onDrawFrame: (now: number, xrFrame: XRFrame) => void;
     }
 }
