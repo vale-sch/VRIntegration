@@ -10,14 +10,3 @@ declare namespace VRIntegration {
 }
 declare namespace VRIntegration {
 }
-declare namespace VRIntegration {
-    class XRConnection {
-        private gl;
-        private glCanvas;
-        private then;
-        private viewport;
-        constructor(canvas: HTMLCanvasElement, gl: WebGLRenderingContext);
-        private init;
-        private update;
-    }
-}

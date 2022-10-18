@@ -42,49 +42,54 @@ var VRIntegration;
 })(VRIntegration || (VRIntegration = {}));
 var VRIntegration;
 (function (VRIntegration) {
-    window.addEventListener("load", checkForSupport);
-    function checkForSupport() {
-        let canvas = document.querySelector("canvas");
-        new VRIntegration.XRConnection(canvas, null);
-    }
-})(VRIntegration || (VRIntegration = {}));
-var VRIntegration;
-(function (VRIntegration) {
     var f = FudgeCore;
-    class XRConnection {
-        gl;
-        glCanvas;
-        then = 0.0;
-        viewport;
-        constructor(canvas, gl) {
-            this.glCanvas = canvas;
-            this.init();
+    let viewport = new f.Viewport;
+    window.addEventListener("load", init);
+    async function init() {
+        await FudgeCore.Project.loadResources("Internal.json");
+        let madeMazeGraph = f.Project.resources[document.head.querySelector("meta[autoView]").getAttribute("autoView")];
+        FudgeCore.Debug.log("Graph:", madeMazeGraph);
+        if (!madeMazeGraph) {
+            alert("Nothing to render. Create a graph with at least a mesh, material and probably some light");
+            return;
         }
-        async init() {
-            await FudgeCore.Project.loadResources("Internal.json");
-            let madeMazeGraph = f.Project.resources[document.head.querySelector("meta[autoView]").getAttribute("autoView")];
-            FudgeCore.Debug.log("Graph:", madeMazeGraph);
-            if (!madeMazeGraph) {
-                alert("Nothing to render. Create a graph with at least a mesh, material and probably some light");
-                return;
-            }
-            // setup the viewport
-            let cmpCamera = madeMazeGraph.getChildrenByName("Camera")[0].getComponent(f.ComponentCamera);
-            //cmpCamera.mtxPivot.rotateX(90);
-            // cmpCamera.mtxPivot.translateY(10);
-            this.viewport = new f.Viewport();
-            this.viewport.initialize("Viewport", madeMazeGraph, cmpCamera, this.glCanvas, true);
-            // this.gl = this.glCanvas.getContext("webgl2");
-            this.viewport.draw();
-            f.Loop.addEventListener("loopFrame" /* f.EVENT.LOOP_FRAME */, this.update);
-            f.Loop.start();
-        }
-        update = (_event) => {
-            // ƒ.Physics.simulate();  // if physics is included and used
-            this.viewport.draw();
-            //f.AudioManager.default.update();
-        };
+        let canvas = document.querySelector("canvas");
+        let cmpCamera = madeMazeGraph.getChildrenByName("Camera")[0].getComponent(f.ComponentCamera);
+        //cmpCamera.mtxPivot.rotateX(90);
+        // cmpCamera.mtxPivot.translateY(10);
+        viewport.initialize("Viewport", madeMazeGraph, cmpCamera, canvas, true);
+        // this.gl = this.glCanvas.getContext("webgl2");
+        viewport.draw();
+        f.Loop.addEventListener("loopFrame" /* f.EVENT.LOOP_FRAME */, update);
+        f.Loop.start();
     }
-    VRIntegration.XRConnection = XRConnection;
+    function update(_event) {
+        // ƒ.Physics.simulate();  // if physics is included and used
+        viewport.draw();
+        //f.AudioManager.default.update();
+    }
+    /*
+ 
+      //call this method if you want to end the immersive session
+      //@ts-ignore
+      private endXRSession(): void {
+          // Do we have an active session?
+          if (this.xrSession) {
+              // End the XR session now.
+              this.xrSession.end().then(this.onSessionEnd);
+          }
+      }
+ 
+      // Restore the page to normal after an immersive session has ended.
+      private onSessionEnd() {
+          this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
+ 
+          this.xrSession = null;
+ 
+          // Ending the session stops executing callbacks passed to the XRSession's
+          // requestAnimationFrame(). To continue rendering, use the window's
+          // requestAnimationFrame() function.
+          // window.requestAnimationFrame(onDrawFrame);
+      }*/
 })(VRIntegration || (VRIntegration = {}));
 //# sourceMappingURL=Script.js.map
