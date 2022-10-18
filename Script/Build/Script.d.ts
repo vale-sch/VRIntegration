@@ -30,6 +30,6 @@ declare namespace VRIntegration {
         private xrSession;
         private xrReferenceSpace;
         private beginXRSession;
-        onDrawFrame: (now: number, xrFrame: XRFrame) => void;
+        onDrawFrame: (_now: number, _xrFrame: XRFrame) => void;
     }
 }

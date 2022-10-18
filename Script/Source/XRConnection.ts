@@ -20,21 +20,28 @@ namespace VRIntegration {
 
 
         // checking for VR-capable devices
-        private checkForSupport() {
-            navigator.xr.isSessionSupported('immersive-vr').then((supported: any) => {
-                if (supported) {
-                    this.enterXRButton = document.createElement("button");
-                    this.enterXRButton.innerHTML = "Enter VR";
-                    this.enterXRButton.style.position = "absolute";
-                    this.enterXRButton.style.left = "35%";
-                    this.enterXRButton.style.top = "40%";
-                    this.enterXRButton.style.fontSize = "200px";
-                    this.enterXRButton.addEventListener("click", this.beginXRSession);
-                    document.body.appendChild(this.enterXRButton);
-                } else {
-                    console.log("Session not supported");
-                }
-            });
+        private async checkForSupport() {
+            let isSupported: boolean = await navigator.xr.isSessionSupported('immersive-vr');
+            if (isSupported) {
+                this.enterXRButton = document.createElement("button");
+                this.enterXRButton.innerHTML = "Enter VR";
+                this.enterXRButton.style.position = "absolute";
+                this.enterXRButton.style.display = "block";
+                this.enterXRButton.style.left = "50%";
+                this.enterXRButton.style.top = "50%";
+                this.enterXRButton.style.transform = "translateX(-50%)";
+                this.enterXRButton.style.fontSize = "100px";
+                this.enterXRButton.style.backgroundColor = "blue";
+                this.enterXRButton.style.color = "white";
+                this.enterXRButton.style.backgroundImage = "linear-gradient(144deg, #AF40FF, #5B42F3 50%, #00DDEB)";
+                this.enterXRButton.style.border = "0";
+                this.enterXRButton.style.borderRadius = "8px";
+                this.enterXRButton.addEventListener("click", this.beginXRSession);
+                document.body.appendChild(this.enterXRButton);
+            } else {
+                console.log("Session not supported");
+            }
+
         }
 
         private xrSession: XRSession = null;
@@ -46,26 +53,22 @@ namespace VRIntegration {
             let session: XRSession = await navigator.xr.requestSession('immersive-vr');
             document.body.removeChild(this.enterXRButton);
             this.xrSession = session;
-            await session.requestReferenceSpace('local')
-                .then((referenceSpace: XRReferenceSpace) => {
-                    this.xrReferenceSpace = referenceSpace;
-                })
-            this.gl.makeXRCompatible().then(() => {
-                // The content that will be shown on the device is defined by the session's  baseLayer.
-                this.xrSession.updateRenderState({ baseLayer: new XRWebGLLayer(this.xrSession, this.gl) });
-            });
+            this.xrReferenceSpace = await session.requestReferenceSpace('local');
+            this.gl.makeXRCompatible();
+            // The content that will be shown on the device is defined by the session's  baseLayer.
+            this.xrSession.updateRenderState({ baseLayer: new XRWebGLLayer(this.xrSession, this.gl) });
+
             // Start the render loop
             this.xrSession.requestAnimationFrame(this.onDrawFrame);
 
         }
 
         //method is called every frame 
-        public onDrawFrame = (now: number, xrFrame: XRFrame): void => {
+        public onDrawFrame = (_now: number, _xrFrame: XRFrame): void => {
             // Do we have an active session?
             if (this.xrSession) {
                 let glLayer = this.xrSession.renderState.baseLayer;
-                let pose = xrFrame.getViewerPose(this.xrReferenceSpace);
-                console.log(xrFrame);
+                let pose = _xrFrame.getViewerPose(this.xrReferenceSpace);
                 if (pose) {
                     // Run imaginary 3D engine's simulation to step forward physics, animations, etc.
                     // scene.updateScene(timestamp, xrFrame);
@@ -73,10 +76,10 @@ namespace VRIntegration {
                     this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, glLayer.framebuffer);
                     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
-                    now *= 0.001;  // convert to seconds
+                    _now *= 0.001;  // convert to seconds
                     let deltaTime = 0;
-                    deltaTime = now - this.then;
-                    this.then = now;
+                    deltaTime = _now - this.then;
+                    this.then = _now;
 
                     for (let view of pose.views) {
                         let viewport = glLayer.getViewport(view);
