@@ -1361,8 +1361,8 @@
                     "direction": "diagonal",
                     "aspect": 1,
                     "pivot": {
-                      "translation": "[0, 6, 30]",
-                      "rotation": "[5, 180, 0]",
+                      "translation": "[0, 6, -30]",
+                      "rotation": "[0, 0, 0]",
                       "scaling": "[1, 1, 1]"
                     },
                     "Component": {
