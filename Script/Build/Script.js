@@ -35,7 +35,7 @@ var VRIntegration;
             }
         };
         update = (_event) => {
-            this.node.getComponent(f.ComponentTransform).mtxLocal.rotateY(1);
+            this.node.getComponent(f.ComponentTransform).mtxLocal.rotateY(0.1);
         };
     }
     VRIntegration.CustomComponentScript = CustomComponentScript;
@@ -55,10 +55,7 @@ var VRIntegration;
         }
         let canvas = document.querySelector("canvas");
         let cmpCamera = madeMazeGraph.getChildrenByName("Camera")[0].getComponent(f.ComponentCamera);
-        //cmpCamera.mtxPivot.rotateX(90);
-        // cmpCamera.mtxPivot.translateY(10);
         viewport.initialize("Viewport", madeMazeGraph, cmpCamera, canvas, true);
-        // this.gl = this.glCanvas.getContext("webgl2");
         viewport.draw();
         f.Loop.addEventListener("loopFrame" /* f.EVENT.LOOP_FRAME */, update);
         f.Loop.start();

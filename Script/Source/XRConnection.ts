@@ -3,6 +3,7 @@ namespace VRIntegration {
     import f = FudgeCore;
     let viewport: f.Viewport = new f.Viewport;
     window.addEventListener("load", init);
+
     async function init() {
         await FudgeCore.Project.loadResources("Internal.json");
         let madeMazeGraph = <f.Graph>f.Project.resources[document.head.querySelector("meta[autoView]").getAttribute("autoView")];
@@ -15,11 +16,7 @@ namespace VRIntegration {
 
         let canvas: HTMLCanvasElement = <HTMLCanvasElement>document.querySelector("canvas");
         let cmpCamera = madeMazeGraph.getChildrenByName("Camera")[0].getComponent(f.ComponentCamera);
-        //cmpCamera.mtxPivot.rotateX(90);
-        // cmpCamera.mtxPivot.translateY(10);
-
         viewport.initialize("Viewport", madeMazeGraph, cmpCamera, canvas, true);
-        // this.gl = this.glCanvas.getContext("webgl2");
         viewport.draw();
         f.Loop.addEventListener(f.EVENT.LOOP_FRAME, update);
         f.Loop.start();
