@@ -39,7 +39,7 @@ namespace VRIntegration {
       }
     }
     private update = (_event: Event): void => {
-      this.node.getComponent(f.ComponentTransform).mtxLocal.rotateY(0.1);
+      this.node.getComponent(f.ComponentTransform).mtxLocal.rotateY(0.25);
     }
 
     // protected reduceMutator(_mutator: ƒ.Mutator): void {

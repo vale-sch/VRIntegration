@@ -5219,11 +5219,13 @@ var FudgeCore;
             if (!this.active)
                 return;
             let control = _event.target;
-            let event = new CustomEvent("output" /* EVENT_CONTROL.OUTPUT */, { detail: {
+            let event = new CustomEvent("output" /* EVENT_CONTROL.OUTPUT */, {
+                detail: {
                     control: control,
                     input: _event.detail.output,
                     output: this.getOutput()
-                } });
+                }
+            });
             this.dispatchEvent(event);
         };
         hndInputEvent = (_event) => {
@@ -7796,9 +7798,9 @@ var FudgeCore;
                 const z0 = _z - Z0;
                 // Deterine which simplex we are in
                 let i1, j1, k1 // Offsets for second corner of simplex in (i,j,k) coords
-                ;
+                    ;
                 let i2, j2, k2 // Offsets for third corner of simplex in (i,j,k) coords
-                ;
+                    ;
                 if (x0 >= y0) {
                     if (y0 >= z0) {
                         i1 = i2 = j2 = 1;
@@ -8638,15 +8640,15 @@ var FudgeCore;
         }
         get vertices() {
             return this.ƒvertices || ( // return cache or ...
-            // ... flatten all vertex positions from cloud into a typed array
-            this.ƒvertices = new Float32Array(this.cloud.flatMap((_vertex, _index) => {
-                return [...this.cloud.position(_index).get()];
-            })));
+                // ... flatten all vertex positions from cloud into a typed array
+                this.ƒvertices = new Float32Array(this.cloud.flatMap((_vertex, _index) => {
+                    return [...this.cloud.position(_index).get()];
+                })));
         }
         get indices() {
             return this.ƒindices || ( // return cache or ...
-            // ... flatten all indices from the faces into a typed array
-            this.ƒindices = new Uint16Array(this.faces.flatMap((_face) => [..._face.indices])));
+                // ... flatten all indices from the faces into a typed array
+                this.ƒindices = new Uint16Array(this.faces.flatMap((_face) => [..._face.indices])));
         }
         get normalsVertex() {
             if (this.ƒnormalsVertex == null) {
@@ -8671,8 +8673,8 @@ var FudgeCore;
         }
         get textureUVs() {
             return this.ƒtextureUVs || ( // return cache or ...
-            // ... flatten all uvs from the clous into a typed array
-            this.ƒtextureUVs = new Float32Array(this.cloud.flatMap((_vertex) => [..._vertex.uv.get()])));
+                // ... flatten all uvs from the clous into a typed array
+                this.ƒtextureUVs = new Float32Array(this.cloud.flatMap((_vertex) => [..._vertex.uv.get()])));
         }
         get verticesFlat() {
             return this.ƒverticesFlat || (this.ƒverticesFlat = this.createVerticesFlat());
@@ -8843,25 +8845,25 @@ var FudgeCore;
             super(_name);
             // this.create();
             this.cloud = new FudgeCore.Vertices(
-            // front
-            new FudgeCore.Vertex(new FudgeCore.Vector3(-0.5, 0.5, 0.5), new FudgeCore.Vector2(0, 0)), // 0
-            new FudgeCore.Vertex(new FudgeCore.Vector3(-0.5, -0.5, 0.5), new FudgeCore.Vector2(0, 1)), // 1
-            new FudgeCore.Vertex(new FudgeCore.Vector3(0.5, -0.5, 0.5), new FudgeCore.Vector2(1, 1)), // 2
-            new FudgeCore.Vertex(new FudgeCore.Vector3(0.5, 0.5, 0.5), new FudgeCore.Vector2(1, 0)), // 3
-            // back
-            new FudgeCore.Vertex(new FudgeCore.Vector3(-0.5, 0.5, -0.5), new FudgeCore.Vector2(3, 0)), // 4
-            new FudgeCore.Vertex(new FudgeCore.Vector3(-0.5, -0.5, -0.5), new FudgeCore.Vector2(3, 1)), // 5
-            new FudgeCore.Vertex(new FudgeCore.Vector3(0.5, -0.5, -0.5), new FudgeCore.Vector2(2, 1)), // 6
-            new FudgeCore.Vertex(new FudgeCore.Vector3(0.5, 0.5, -0.5), new FudgeCore.Vector2(2, 0)), // 7
-            // references
-            new FudgeCore.Vertex(0, new FudgeCore.Vector2(4, 0)), // 8
-            new FudgeCore.Vertex(1, new FudgeCore.Vector2(4, 1)), // 9
-            new FudgeCore.Vertex(3, new FudgeCore.Vector2(0, 1)), // 10
-            new FudgeCore.Vertex(7, new FudgeCore.Vector2(1, 1)), // 11
-            new FudgeCore.Vertex(4, new FudgeCore.Vector2(1, 0)), // 12
-            new FudgeCore.Vertex(2, new FudgeCore.Vector2(0, 0)), // 13
-            new FudgeCore.Vertex(6, new FudgeCore.Vector2(1, 0)), // 14
-            new FudgeCore.Vertex(5, new FudgeCore.Vector2(1, 1)) // 15
+                // front
+                new FudgeCore.Vertex(new FudgeCore.Vector3(-0.5, 0.5, 0.5), new FudgeCore.Vector2(0, 0)), // 0
+                new FudgeCore.Vertex(new FudgeCore.Vector3(-0.5, -0.5, 0.5), new FudgeCore.Vector2(0, 1)), // 1
+                new FudgeCore.Vertex(new FudgeCore.Vector3(0.5, -0.5, 0.5), new FudgeCore.Vector2(1, 1)), // 2
+                new FudgeCore.Vertex(new FudgeCore.Vector3(0.5, 0.5, 0.5), new FudgeCore.Vector2(1, 0)), // 3
+                // back
+                new FudgeCore.Vertex(new FudgeCore.Vector3(-0.5, 0.5, -0.5), new FudgeCore.Vector2(3, 0)), // 4
+                new FudgeCore.Vertex(new FudgeCore.Vector3(-0.5, -0.5, -0.5), new FudgeCore.Vector2(3, 1)), // 5
+                new FudgeCore.Vertex(new FudgeCore.Vector3(0.5, -0.5, -0.5), new FudgeCore.Vector2(2, 1)), // 6
+                new FudgeCore.Vertex(new FudgeCore.Vector3(0.5, 0.5, -0.5), new FudgeCore.Vector2(2, 0)), // 7
+                // references
+                new FudgeCore.Vertex(0, new FudgeCore.Vector2(4, 0)), // 8
+                new FudgeCore.Vertex(1, new FudgeCore.Vector2(4, 1)), // 9
+                new FudgeCore.Vertex(3, new FudgeCore.Vector2(0, 1)), // 10
+                new FudgeCore.Vertex(7, new FudgeCore.Vector2(1, 1)), // 11
+                new FudgeCore.Vertex(4, new FudgeCore.Vector2(1, 0)), // 12
+                new FudgeCore.Vertex(2, new FudgeCore.Vector2(0, 0)), // 13
+                new FudgeCore.Vertex(6, new FudgeCore.Vector2(1, 0)), // 14
+                new FudgeCore.Vertex(5, new FudgeCore.Vector2(1, 1)) // 15
             );
             this.faces = [
                 ...new FudgeCore.Quad(this.cloud, 0, 1, 2, 3).faces,
@@ -9202,12 +9204,12 @@ var FudgeCore;
             super(_name);
             // this.create();
             this.cloud = new FudgeCore.Vertices(
-            // ground vertices
-            new FudgeCore.Vertex(new FudgeCore.Vector3(-0.5, 0.0, 0.5), new FudgeCore.Vector2(0, 1)), new FudgeCore.Vertex(new FudgeCore.Vector3(0.5, 0.0, 0.5), new FudgeCore.Vector2(1, 1)), new FudgeCore.Vertex(new FudgeCore.Vector3(0.5, 0.0, -0.5), new FudgeCore.Vector2(1, 0)), new FudgeCore.Vertex(new FudgeCore.Vector3(-0.5, 0.0, -0.5), new FudgeCore.Vector2(0, 0)), 
-            // tip (vertex #4)
-            new FudgeCore.Vertex(new FudgeCore.Vector3(0.0, 1.0, 0.0), new FudgeCore.Vector2(0.5, 0.5)), 
-            // floor again for downside texture
-            new FudgeCore.Vertex(new FudgeCore.Vector3(-0.5, 0.0, 0.5), new FudgeCore.Vector2(0, 0)), new FudgeCore.Vertex(new FudgeCore.Vector3(0.5, 0.0, 0.5), new FudgeCore.Vector2(1, 0)), new FudgeCore.Vertex(new FudgeCore.Vector3(0.5, 0.0, -0.5), new FudgeCore.Vector2(1, 1)), new FudgeCore.Vertex(new FudgeCore.Vector3(-0.5, 0.0, -0.5), new FudgeCore.Vector2(0, 1)));
+                // ground vertices
+                new FudgeCore.Vertex(new FudgeCore.Vector3(-0.5, 0.0, 0.5), new FudgeCore.Vector2(0, 1)), new FudgeCore.Vertex(new FudgeCore.Vector3(0.5, 0.0, 0.5), new FudgeCore.Vector2(1, 1)), new FudgeCore.Vertex(new FudgeCore.Vector3(0.5, 0.0, -0.5), new FudgeCore.Vector2(1, 0)), new FudgeCore.Vertex(new FudgeCore.Vector3(-0.5, 0.0, -0.5), new FudgeCore.Vector2(0, 0)),
+                // tip (vertex #4)
+                new FudgeCore.Vertex(new FudgeCore.Vector3(0.0, 1.0, 0.0), new FudgeCore.Vector2(0.5, 0.5)),
+                // floor again for downside texture
+                new FudgeCore.Vertex(new FudgeCore.Vector3(-0.5, 0.0, 0.5), new FudgeCore.Vector2(0, 0)), new FudgeCore.Vertex(new FudgeCore.Vector3(0.5, 0.0, 0.5), new FudgeCore.Vector2(1, 0)), new FudgeCore.Vertex(new FudgeCore.Vector3(0.5, 0.0, -0.5), new FudgeCore.Vector2(1, 1)), new FudgeCore.Vertex(new FudgeCore.Vector3(-0.5, 0.0, -0.5), new FudgeCore.Vector2(0, 1)));
             this.faces = [
                 new FudgeCore.Face(this.cloud, 4, 0, 1),
                 new FudgeCore.Face(this.cloud, 4, 1, 2),

@@ -35,7 +35,7 @@ var VRIntegration;
             }
         };
         update = (_event) => {
-            this.node.getComponent(f.ComponentTransform).mtxLocal.rotateY(0.1);
+            this.node.getComponent(f.ComponentTransform).mtxLocal.rotateY(0.25);
         };
     }
     VRIntegration.CustomComponentScript = CustomComponentScript;
