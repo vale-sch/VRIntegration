@@ -3207,5 +3207,100 @@
       "idResource": "Graph|2022-10-21T18:58:41.887Z|07209",
       "type": "Graph"
     }
+  },
+  "Graph|2022-10-25T13:52:04.702Z|55143": {
+    "ƒ.Graph": {
+      "name": "Sphere",
+      "components": {},
+      "children": [
+        {
+          "ƒ.Node": {
+            "name": "Spehre",
+            "components": {
+              "ComponentMaterial": [
+                {
+                  "ƒ.ComponentMaterial": {
+                    "sortForAlpha": false,
+                    "clrPrimary": "[1, 1, 1, 1]",
+                    "clrSecondary": "[1, 1, 1, 1]",
+                    "pivot": {
+                      "translation": "[0, 0]",
+                      "rotation": 0,
+                      "scaling": "[1, 1]"
+                    },
+                    "Component": {
+                      "active": true
+                    },
+                    "idMaterial": "Material|2022-10-21T18:58:54.817Z|51499"
+                  }
+                }
+              ],
+              "ComponentMesh": [
+                {
+                  "ƒ.ComponentMesh": {
+                    "idMesh": "MeshSphere|2022-10-25T14:36:32.807Z|47440",
+                    "pivot": {
+                      "translation": "[0, 0, 0]",
+                      "rotation": "[0, 0, 0]",
+                      "scaling": "[1, 1, 1]"
+                    },
+                    "Component": {
+                      "active": true
+                    }
+                  }
+                }
+              ],
+              "ComponentTransform": [
+                {
+                  "ƒ.ComponentTransform": {
+                    "local": {
+                      "translation": "[0, 2, -5]",
+                      "rotation": "[0, 0, 0]",
+                      "scaling": "[1, 1, 1]"
+                    },
+                    "Component": {
+                      "active": true
+                    }
+                  }
+                }
+              ],
+              "CubeTranslation": [
+                {
+                  "VRIntegration.CubeTranslation": {
+                    "active": true,
+                    "message": "CustomComponentScript added to "
+                  }
+                }
+              ]
+            },
+            "children": []
+          }
+        }
+      ],
+      "idResource": "Graph|2022-10-25T13:52:04.702Z|55143",
+      "type": "Graph"
+    }
+  },
+  "MeshSphere|2022-10-25T14:36:32.807Z|47440": {
+    "ƒ.MeshSphere": {
+      "idResource": "MeshSphere|2022-10-25T14:36:32.807Z|47440",
+      "name": "MeshSphere",
+      "type": "MeshSphere",
+      "shape": {
+        "ƒ.Vector2": [
+          "[0, 0.5]",
+          "[0.19134171307086945, 0.4619397521018982]",
+          "[0.3535533845424652, 0.3535533845424652]",
+          "[0.4619397521018982, 0.19134171307086945]",
+          "[0.5, 0]",
+          "[0.4619397521018982, -0.19134171307086945]",
+          "[0.3535533845424652, -0.3535533845424652]",
+          "[0.19134171307086945, -0.4619397521018982]",
+          "[0, -0.5]"
+        ]
+      },
+      "longitudes": 8,
+      "latitudes": 8
+    }
   }
 }

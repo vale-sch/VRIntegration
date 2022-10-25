@@ -3,27 +3,30 @@ namespace VRIntegration {
     import f = FudgeCore;
     let xrViewport: f.XRViewport = new f.XRViewport;
     window.addEventListener("load", init);
-
+    export let graph: f.Graph = null;
+    export let cmpCamera: f.ComponentCamera = null;
     async function init() {
         await FudgeCore.Project.loadResources("Internal.json");
-        let madeMazeGraph = <f.Graph>f.Project.resources[document.head.querySelector("meta[autoView]").getAttribute("autoView")];
+        graph = <f.Graph>f.Project.resources[document.head.querySelector("meta[autoView]").getAttribute("autoView")];
 
-        FudgeCore.Debug.log("Graph:", madeMazeGraph);
-        if (!madeMazeGraph) {
+        FudgeCore.Debug.log("Graph:", graph);
+        if (!graph) {
             alert("Nothing to render. Create a graph with at least a mesh, material and probably some light");
             return;
         }
 
         let canvas: HTMLCanvasElement = <HTMLCanvasElement>document.querySelector("canvas");
-        let cmpCamera = madeMazeGraph.getChildrenByName("Camera")[0].getComponent(f.ComponentCamera);
-        xrViewport.initialize("Viewport", madeMazeGraph, cmpCamera, canvas, true);
+        cmpCamera = graph.getChildrenByName("Camera")[0].getComponent(f.ComponentCamera);
+        xrViewport.initialize("Viewport", graph, cmpCamera, canvas, true);
         xrViewport.draw();
+
         f.Loop.addEventListener(f.EVENT.LOOP_FRAME, update);
         f.Loop.start();
     }
 
     function update(_event: Event): void {
-        // ƒ.Physics.simulate();  // if physics is included and used
+        // f.Physics.simulate()
+        // f.Physics.simulate();  // if physics is included and used
         xrViewport.draw();
         //f.AudioManager.default.update();
     }
