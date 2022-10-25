@@ -5,7 +5,7 @@
         "key": "C:\\Users\\valiv\\servercertificate\\server.key", //full path of the private key
         "passphrase": "2545"
         },
-    "liveServer.settings.port": 7701,
+    "liveServer.settings.port": 7702,
     "todohighlight.keywords": [
         {
             "text": "todo:",

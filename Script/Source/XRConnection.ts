@@ -1,7 +1,7 @@
 
 namespace VRIntegration {
     import f = FudgeCore;
-    let viewport: f.Viewport = new f.Viewport;
+    let xrViewport: f.XRViewport = new f.XRViewport;
     window.addEventListener("load", init);
 
     async function init() {
@@ -16,15 +16,15 @@ namespace VRIntegration {
 
         let canvas: HTMLCanvasElement = <HTMLCanvasElement>document.querySelector("canvas");
         let cmpCamera = madeMazeGraph.getChildrenByName("Camera")[0].getComponent(f.ComponentCamera);
-        viewport.initialize("Viewport", madeMazeGraph, cmpCamera, canvas, true);
-        viewport.draw();
+        xrViewport.initialize("Viewport", madeMazeGraph, cmpCamera, canvas, true);
+        xrViewport.draw();
         f.Loop.addEventListener(f.EVENT.LOOP_FRAME, update);
         f.Loop.start();
     }
 
     function update(_event: Event): void {
         // ƒ.Physics.simulate();  // if physics is included and used
-        viewport.draw();
+        xrViewport.draw();
         //f.AudioManager.default.update();
     }
 

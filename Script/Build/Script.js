@@ -43,7 +43,7 @@ var VRIntegration;
 var VRIntegration;
 (function (VRIntegration) {
     var f = FudgeCore;
-    let viewport = new f.Viewport;
+    let xrViewport = new f.XRViewport;
     window.addEventListener("load", init);
     async function init() {
         await FudgeCore.Project.loadResources("Internal.json");
@@ -55,14 +55,14 @@ var VRIntegration;
         }
         let canvas = document.querySelector("canvas");
         let cmpCamera = madeMazeGraph.getChildrenByName("Camera")[0].getComponent(f.ComponentCamera);
-        viewport.initialize("Viewport", madeMazeGraph, cmpCamera, canvas, true);
-        viewport.draw();
+        xrViewport.initialize("Viewport", madeMazeGraph, cmpCamera, canvas, true);
+        xrViewport.draw();
         f.Loop.addEventListener("loopFrame" /* f.EVENT.LOOP_FRAME */, update);
         f.Loop.start();
     }
     function update(_event) {
         // ƒ.Physics.simulate();  // if physics is included and used
-        viewport.draw();
+        xrViewport.draw();
         //f.AudioManager.default.update();
     }
     /*
