@@ -22,13 +22,12 @@ namespace VRIntegration {
         // this.gl = this.glCanvas.getContext("webgl2");
         xrViewport.draw();
         f.Loop.addEventListener(f.EVENT.LOOP_FRAME, update);
-        f.Loop.start();
+        //import change for XR SESSION
+        f.Loop.start(f.LOOP_MODE.FRAME_REQUEST_XR);
     }
 
     function update(_event: Event): void {
-        // ƒ.Physics.simulate();  // if physics is included and used
         xrViewport.draw();
-        //f.AudioManager.default.update();
     }
 
     /*
