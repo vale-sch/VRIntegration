@@ -28,6 +28,8 @@ namespace VRIntegration {
         case f.EVENT.COMPONENT_ADD:
           f.Loop.addEventListener(f.EVENT.LOOP_FRAME, this.update);
           f.Loop.start();
+
+
           break;
         case f.EVENT.COMPONENT_REMOVE:
           this.removeEventListener(f.EVENT.COMPONENT_ADD, this.hndEvent);
@@ -38,8 +40,20 @@ namespace VRIntegration {
           break;
       }
     }
+    private hasSetted: boolean = false;
     private update = (_event: Event): void => {
       this.node.getComponent(f.ComponentTransform).mtxLocal.rotateY(0.25);
+      if (this.hasSetted) return;
+      if (this.node.nChildren > 0 && this.node.name != "FudgeLogo")
+        this.node.getChildren().forEach(element => {
+          if (element.getComponent(f.ComponentMaterial))
+            element.getComponent(f.ComponentMaterial).clrPrimary = new f.Color(f.random.getRange(0, 1), f.random.getRange(0, 1), f.random.getRange(0, 1), 1);
+          element.getChildren().forEach(element => {
+            if (element.getComponent(f.ComponentMaterial))
+              element.getComponent(f.ComponentMaterial).clrPrimary = new f.Color(f.random.getRange(0, 1), f.random.getRange(0, 1), f.random.getRange(0, 1), 1);
+          });
+          this.hasSetted = true;
+        });
     }
 
     // protected reduceMutator(_mutator: ƒ.Mutator): void {

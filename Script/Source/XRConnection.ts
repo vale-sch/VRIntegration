@@ -3,8 +3,8 @@ namespace VRIntegration {
     import f = FudgeCore;
     let xrViewport: f.XRViewport = new f.XRViewport;
     window.addEventListener("load", init);
-    export let graph: f.Graph = null;
-    export let cmpCamera: f.ComponentCamera = null;
+    let graph: f.Graph = null;
+    let cmpCamera: f.ComponentCamera = null;
     async function init() {
         await FudgeCore.Project.loadResources("Internal.json");
         graph = <f.Graph>f.Project.resources[document.head.querySelector("meta[autoView]").getAttribute("autoView")];
@@ -17,18 +17,16 @@ namespace VRIntegration {
 
         let canvas: HTMLCanvasElement = <HTMLCanvasElement>document.querySelector("canvas");
         cmpCamera = graph.getChildrenByName("Camera")[0].getComponent(f.ComponentCamera);
-        xrViewport.initialize("Viewport", graph, cmpCamera, canvas, true);
+        xrViewport.initialize("Viewport", graph, cmpCamera, canvas);
         xrViewport.draw();
 
         f.Loop.addEventListener(f.EVENT.LOOP_FRAME, update);
-        f.Loop.start();
+        //important change for XR USE
+        f.Loop.start(f.LOOP_MODE.FRAME_REQUEST_XR);
     }
 
     function update(_event: Event): void {
-        // f.Physics.simulate()
-        // f.Physics.simulate();  // if physics is included and used
         xrViewport.draw();
-        //f.AudioManager.default.update();
     }
 
     /*

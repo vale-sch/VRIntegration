@@ -14,11 +14,9 @@ declare namespace VRIntegration {
         message: string;
         constructor();
         hndEvent: (_event: Event) => void;
+        private hasSetted;
         private update;
     }
 }
 declare namespace VRIntegration {
-    import f = FudgeCore;
-    let graph: f.Graph;
-    let cmpCamera: f.ComponentCamera;
 }

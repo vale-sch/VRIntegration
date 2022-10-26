@@ -23,6 +23,7 @@ var VRIntegration;
             switch (_event.type) {
                 case "componentAdd" /* f.EVENT.COMPONENT_ADD */:
                     this.node.getComponent(f.ComponentTransform).mtxLocal.translation = new f.Vector3(f.random.getRange(-10, 10), 0, f.random.getRange(-5, -20));
+                    this.node.getComponent(f.ComponentMaterial).clrPrimary = new f.Color(f.random.getRange(0, 1), f.random.getRange(0, 1), f.random.getRange(0, 1), 1);
                     break;
                 case "componentRemove" /* f.EVENT.COMPONENT_REMOVE */:
                     this.removeEventListener("componentAdd" /* f.EVENT.COMPONENT_ADD */, this.hndEvent);
@@ -71,8 +72,21 @@ var VRIntegration;
                     break;
             }
         };
+        hasSetted = false;
         update = (_event) => {
             this.node.getComponent(f.ComponentTransform).mtxLocal.rotateY(0.25);
+            if (this.hasSetted)
+                return;
+            if (this.node.nChildren > 0 && this.node.name != "FudgeLogo")
+                this.node.getChildren().forEach(element => {
+                    if (element.getComponent(f.ComponentMaterial))
+                        element.getComponent(f.ComponentMaterial).clrPrimary = new f.Color(f.random.getRange(0, 1), f.random.getRange(0, 1), f.random.getRange(0, 1), 1);
+                    element.getChildren().forEach(element => {
+                        if (element.getComponent(f.ComponentMaterial))
+                            element.getComponent(f.ComponentMaterial).clrPrimary = new f.Color(f.random.getRange(0, 1), f.random.getRange(0, 1), f.random.getRange(0, 1), 1);
+                    });
+                    this.hasSetted = true;
+                });
         };
     }
     VRIntegration.CustomComponentScript = CustomComponentScript;
@@ -82,28 +96,26 @@ var VRIntegration;
     var f = FudgeCore;
     let xrViewport = new f.XRViewport;
     window.addEventListener("load", init);
-    VRIntegration.graph = null;
-    VRIntegration.cmpCamera = null;
+    let graph = null;
+    let cmpCamera = null;
     async function init() {
         await FudgeCore.Project.loadResources("Internal.json");
-        VRIntegration.graph = f.Project.resources[document.head.querySelector("meta[autoView]").getAttribute("autoView")];
-        FudgeCore.Debug.log("Graph:", VRIntegration.graph);
-        if (!VRIntegration.graph) {
+        graph = f.Project.resources[document.head.querySelector("meta[autoView]").getAttribute("autoView")];
+        FudgeCore.Debug.log("Graph:", graph);
+        if (!graph) {
             alert("Nothing to render. Create a graph with at least a mesh, material and probably some light");
             return;
         }
         let canvas = document.querySelector("canvas");
-        VRIntegration.cmpCamera = VRIntegration.graph.getChildrenByName("Camera")[0].getComponent(f.ComponentCamera);
-        xrViewport.initialize("Viewport", VRIntegration.graph, VRIntegration.cmpCamera, canvas, true);
+        cmpCamera = graph.getChildrenByName("Camera")[0].getComponent(f.ComponentCamera);
+        xrViewport.initialize("Viewport", graph, cmpCamera, canvas);
         xrViewport.draw();
         f.Loop.addEventListener("loopFrame" /* f.EVENT.LOOP_FRAME */, update);
-        f.Loop.start();
+        //important change for XR USE
+        f.Loop.start(f.LOOP_MODE.FRAME_REQUEST_XR);
     }
     function update(_event) {
-        // f.Physics.simulate()
-        // f.Physics.simulate();  // if physics is included and used
         xrViewport.draw();
-        //f.AudioManager.default.update();
     }
     /*
  
