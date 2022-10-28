@@ -1,4 +1,5 @@
 /// <reference path="../../Physics/OIMOPhysics.d.ts" />
+/// <reference types="webxr" />
 declare namespace FudgeCore {
     /**
      * Base class for the different DebugTargets, mainly for technical purpose of inheritance
@@ -1917,6 +1918,7 @@ declare namespace FudgeCore {
          */
         get mtxWorldToView(): Matrix4x4;
         get mtxCameraInverse(): Matrix4x4;
+        get getMtxProjection(): Matrix4x4;
         resetWorldToView(): void;
         getProjection(): PROJECTION;
         getBackgroundEnabled(): boolean;
@@ -5153,7 +5155,9 @@ declare namespace FudgeCore {
          * for each node in the line of sight and return that as an unsorted {@link Pick}-array
          */
         static pickBranch(_nodes: Node[], _cmpCamera: ComponentCamera): Pick[];
+        static beginXRSession(): Promise<void>;
         static draw(_cmpCamera: ComponentCamera): void;
+        static drawXR(_cmpCamera: ComponentCamera, _xrFrame?: XRFrame): void;
         private static drawListAlpha;
         private static drawList;
         private static transformByPhysics;
@@ -5261,7 +5265,7 @@ declare namespace FudgeCore {
         /**
          * Connects the viewport to the given canvas to render the given branch to using the given camera-component, and names the viewport as given.
          */
-        initialize(_name: string, _branch: Node, _camera: ComponentCamera, _canvas: HTMLCanvasElement): void;
+        initialize(_name: string, _branch: Node, _camera: ComponentCamera, _canvas: HTMLCanvasElement, _isVRSession?: boolean): void;
         /**
          * Retrieve the size of the destination canvas as a rectangle, x and y are always 0
          */
@@ -5271,13 +5275,17 @@ declare namespace FudgeCore {
          */
         getClientRectangle(): Rectangle;
         /**
-         * Set the branch to be drawn in the viewport.
+         * Set the context from canvas.
          */
-        setBranch(_branch: Node): void;
+        setContext(_cr2c: CanvasRenderingContext2D): void;
         /**
          * Retrieve the branch this viewport renders
          */
         getBranch(): Node;
+        /**
+         * Retrieve the context from canvas
+         */
+        getContext(): CanvasRenderingContext2D;
         /**
          * Draw this viewport displaying its branch. By default, the transforms in the branch are recalculated first.
          * Pass `false` if calculation was already done for this frame
@@ -5341,6 +5349,31 @@ declare namespace FudgeCore {
          * Returns a point in the browser page matching the given point of the viewport
          */
         pointClientToScreen(_client: Vector2): Vector2;
+        /**
+      * Set the branch to be drawn in the viewport.
+      */
+        protected setBranch(_branch: Node): void;
+        /**
+         * Set the canvas.
+         */
+        protected setCanvas(_canvas: HTMLCanvasElement): void;
+    }
+}
+declare namespace FudgeCore {
+    class XRViewport extends Viewport {
+        #private;
+        static branch: Node;
+        constructor();
+        static set xrFrame(_xrFrame: XRFrame);
+        static set xrSession(_xrSession: XRSession);
+        static set xrReferenceSpace(_xrReferenceSpace: XRReferenceSpace);
+        static get xrSession(): XRSession;
+        static get xrReferenceSpace(): XRReferenceSpace;
+        static onSqueeze(): void;
+        static onSelect(): Promise<void>;
+        initialize(_name: string, _branch: Node, _camera: ComponentCamera, _canvas: HTMLCanvasElement): void;
+        initializeVR(): void;
+        draw(_calculateTransforms?: boolean): void;
     }
 }
 declare namespace FudgeCore {
@@ -6465,6 +6498,8 @@ declare namespace FudgeCore {
     enum LOOP_MODE {
         /** Loop cycles controlled by window.requestAnimationFrame */
         FRAME_REQUEST = "frameRequest",
+        /** Loop cycles controlled by xrSession.requestAnimationFrame */
+        FRAME_REQUEST_XR = "frameRequestXR",
         /** Loop cycles with the given framerate in {@link Time.game} */
         TIME_GAME = "timeGame",
         /** Loop cycles with the given framerate in realtime, independent of {@link Time.game} */
@@ -6525,6 +6560,7 @@ declare namespace FudgeCore {
         static continue(): void;
         private static loop;
         private static loopFrame;
+        private static loopFrameXR;
         private static loopTime;
     }
 }

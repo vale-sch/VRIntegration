@@ -1,0 +1,31 @@
+-----------------Questions--------------------------
+Code zeigen ( ist das so sinnvoll / wie sollte ich es anders machen)
+Uniforms im Shader
+Loop Methode wird unterbrochen sobald es startet
+Event System für User greifbar machen / wie umsetzen dass events erst feuern wenn VR session gegeben ist
+
+
+
+
+
+
+
+-----------------Questions--------------------------
+
+
+
+-------------------To-Do`s--------------------------
+VR-Frame auf Camera setzen in initialize
+ -> Danach immer Camera auf VR-Frame setzen 
+
+Controller hinzufügen + Ray ausstrahlen
+
+
+
+
+
+mehrere Viewports auf einem Canvas // verschiedene Perspektiven (z.B: Autospiegel)
+Camera Picking (gibt es die echte Camera)
+
+
+-------------------To-Do`s--------------------------
