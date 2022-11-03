@@ -26,7 +26,7 @@ namespace VRIntegration {
         public hndEvent = (_event: Event): void => {
             switch (_event.type) {
                 case f.EVENT.COMPONENT_ADD:
-                    this.node.getComponent(f.ComponentTransform).mtxLocal.translation = new f.Vector3(f.random.getRange(-10, 10), -0.25, f.random.getRange(0, -10))
+                    this.node.getComponent(f.ComponentTransform).mtxLocal.translation = new f.Vector3(f.random.getRange(-10, 10), 1, f.random.getRange(-10, 10))
                     this.node.getComponent(f.ComponentMaterial).clrPrimary = new f.Color(f.random.getRange(0, 1), f.random.getRange(0, 1), f.random.getRange(0, 1), 1);
 
                     break;

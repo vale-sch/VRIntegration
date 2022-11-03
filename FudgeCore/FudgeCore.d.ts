@@ -5367,7 +5367,7 @@ declare namespace FudgeCore {
         static set xrReferenceSpace(_xrReferenceSpace: XRReferenceSpace);
         static get xrSession(): XRSession;
         static get xrReferenceSpace(): XRReferenceSpace;
-        static setNewRigidtransform(_newPosition: Vector3, _newOrientation?: Vector3): void;
+        static setXRRigidtransform(_newMtx: Matrix4x4): void;
         initialize(_name: string, _branch: Node, _camera: ComponentCamera, _canvas: HTMLCanvasElement): void;
     }
 }

@@ -10413,6 +10413,7 @@ var FudgeCore;
         static #xrReferenceSpace = null;
         static #xrFrame = null;
         static #xrCamera = null;
+        static #oldMtx = new FudgeCore.Matrix4x4;
         static set xrFrame(_xrFrame) {
             XRViewport.#xrFrame = _xrFrame;
             FudgeCore.Render.drawXR(XRViewport.#xrCamera, XRViewport.#xrFrame);
@@ -10435,10 +10436,10 @@ var FudgeCore;
             else
                 return null;
         }
-        static setNewRigidtransform(_newPosition, _newOrientation = FudgeCore.Vector3.ZERO()) {
-            let convertedPos = new FudgeCore.Vector3(-_newPosition.x, -_newPosition.y, -_newPosition.z);
-            let newRigidtransform = new XRRigidTransform(convertedPos, _newOrientation);
-            this.#xrReferenceSpace = this.#xrReferenceSpace.getOffsetReferenceSpace(newRigidtransform);
+        static setXRRigidtransform(_newMtx) {
+            let newPos = _newMtx.getTranslationTo(this.#oldMtx);
+            this.#xrReferenceSpace = this.#xrReferenceSpace.getOffsetReferenceSpace(new XRRigidTransform(newPos, FudgeCore.Vector3.ZERO()));
+            this.#oldMtx = _newMtx;
         }
         initialize(_name, _branch, _camera, _canvas) {
             super.initialize(_name, _branch, _camera, _canvas);

@@ -22,7 +22,7 @@ var VRIntegration;
         hndEvent = (_event) => {
             switch (_event.type) {
                 case "componentAdd" /* f.EVENT.COMPONENT_ADD */:
-                    this.node.getComponent(f.ComponentTransform).mtxLocal.translation = new f.Vector3(f.random.getRange(-10, 10), -0.25, f.random.getRange(0, -10));
+                    this.node.getComponent(f.ComponentTransform).mtxLocal.translation = new f.Vector3(f.random.getRange(-10, 10), 1, f.random.getRange(-10, 10));
                     this.node.getComponent(f.ComponentMaterial).clrPrimary = new f.Color(f.random.getRange(0, 1), f.random.getRange(0, 1), f.random.getRange(0, 1), 1);
                     break;
                 case "componentRemove" /* f.EVENT.COMPONENT_REMOVE */:
@@ -97,6 +97,7 @@ var VRIntegration;
     let xrViewport = new f.XRViewport();
     let graph = null;
     let cmpCamera = null;
+    let ray = null;
     window.addEventListener("load", init);
     async function init() {
         await FudgeCore.Project.loadResources("Internal.json");
@@ -108,17 +109,16 @@ var VRIntegration;
         }
         let canvas = document.querySelector("canvas");
         cmpCamera = graph.getChildrenByName("Camera")[0].getComponent(f.ComponentCamera);
-        //cmpCamera.mtxPivot.rotateX(90);
-        // cmpCamera.mtxPivot.translateY(10);
         xrViewport.initialize("Viewport", graph, cmpCamera, canvas);
-        // this.gl = this.glCanvas.getContext("webgl2");
         xrViewport.draw();
+        ray = new f.Ray(f.Vector3.Z(1), f.Vector3.Y(1), 500);
         f.Loop.addEventListener("loopFrame" /* f.EVENT.LOOP_FRAME */, update);
-        //import change for XR SESSION
         f.Loop.start(f.LOOP_MODE.FRAME_REQUEST);
         checkForVRSupport();
     }
     function update(_event) {
+        let picks = f.Picker.pickRay(graph.getChildrenByName("FudgeLogo")[0].getChildren(), ray, 0.1, 15);
+        console.log(picks);
         xrViewport.draw();
     }
     function checkForVRSupport() {
@@ -141,20 +141,18 @@ var VRIntegration;
             f.XRViewport.xrSession.addEventListener("squeeze", onSqueeze);
             f.XRViewport.xrSession.addEventListener("select", onSelect);
             f.XRViewport.xrSession.addEventListener("end", onEndSession);
-            setVRRigidtransformToCamera();
+            f.XRViewport.setXRRigidtransform(cmpCamera.mtxWorld);
         });
-    }
-    function setVRRigidtransformToCamera() {
-        f.XRViewport.setNewRigidtransform(cmpCamera.mtxWorld.translation);
     }
     function onSqueeze() {
         console.log("SQUEEZED");
-        let newPos = new f.Vector3(0, 0, 5);
-        f.XRViewport.setNewRigidtransform(newPos);
+        // let newPos: f.Vector3 = new f.Vector3(0, 0, 5);
+        // f.XRViewport.setNewRigidtransform(newPos);
     }
     async function onSelect() {
         let sphere = await f.Project.createGraphInstance(f.Project.resources["Graph|2022-10-26T13:26:47.063Z|65923"]);
         graph.appendChild(sphere);
+        f.XRViewport.setXRRigidtransform(sphere.getChild(0).mtxLocal);
     }
     function onEndSession() {
         f.Loop.stop();
