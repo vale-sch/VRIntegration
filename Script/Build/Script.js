@@ -94,52 +94,71 @@ var VRIntegration;
 var VRIntegration;
 (function (VRIntegration) {
     var f = FudgeCore;
-    let xrViewport = new f.XRViewport;
+    let xrViewport = new f.XRViewport();
+    let graph = null;
+    let cmpCamera = null;
     window.addEventListener("load", init);
     async function init() {
         await FudgeCore.Project.loadResources("Internal.json");
-        let madeMazeGraph = f.Project.resources[document.head.querySelector("meta[autoView]").getAttribute("autoView")];
-        FudgeCore.Debug.log("Graph:", madeMazeGraph);
-        if (!madeMazeGraph) {
+        graph = f.Project.resources[document.head.querySelector("meta[autoView]").getAttribute("autoView")];
+        FudgeCore.Debug.log("Graph:", graph);
+        if (!graph) {
             alert("Nothing to render. Create a graph with at least a mesh, material and probably some light");
             return;
         }
         let canvas = document.querySelector("canvas");
-        let cmpCamera = madeMazeGraph.getChildrenByName("Camera")[0].getComponent(f.ComponentCamera);
+        cmpCamera = graph.getChildrenByName("Camera")[0].getComponent(f.ComponentCamera);
         //cmpCamera.mtxPivot.rotateX(90);
         // cmpCamera.mtxPivot.translateY(10);
-        xrViewport.initialize("Viewport", madeMazeGraph, cmpCamera, canvas, true);
+        xrViewport.initialize("Viewport", graph, cmpCamera, canvas);
         // this.gl = this.glCanvas.getContext("webgl2");
         xrViewport.draw();
         f.Loop.addEventListener("loopFrame" /* f.EVENT.LOOP_FRAME */, update);
         //import change for XR SESSION
-        f.Loop.start(f.LOOP_MODE.FRAME_REQUEST_XR);
+        f.Loop.start(f.LOOP_MODE.FRAME_REQUEST);
+        checkForVRSupport();
     }
     function update(_event) {
         xrViewport.draw();
     }
-    /*
- 
-      //call this method if you want to end the immersive session
-      //@ts-ignore
-      private endXRSession(): void {
-          // Do we have an active session?
-          if (this.xrSession) {
-              // End the XR session now.
-              this.xrSession.end().then(this.onSessionEnd);
-          }
-      }
- 
-      // Restore the page to normal after an immersive session has ended.
-      private onSessionEnd() {
-          this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
- 
-          this.xrSession = null;
- 
-          // Ending the session stops executing callbacks passed to the XRSession's
-          // requestAnimationFrame(). To continue rendering, use the window's
-          // requestAnimationFrame() function.
-          // window.requestAnimationFrame(onDrawFrame);
-      }*/
+    function checkForVRSupport() {
+        navigator.xr.isSessionSupported("immersive-vr").then((supported) => {
+            if (supported)
+                initializeVR();
+            else
+                console.log("Session not supported");
+        });
+    }
+    function initializeVR() {
+        let enterXRButton = document.createElement("button");
+        enterXRButton.id = "xrButton";
+        enterXRButton.innerHTML = "Enter VR";
+        document.body.appendChild(enterXRButton);
+        enterXRButton.addEventListener("click", async function () {
+            await f.Render.initializeXR("immersive-vr", "local");
+            f.Loop.stop();
+            f.Loop.start(f.LOOP_MODE.FRAME_REQUEST_XR);
+            f.XRViewport.xrSession.addEventListener("squeeze", onSqueeze);
+            f.XRViewport.xrSession.addEventListener("select", onSelect);
+            f.XRViewport.xrSession.addEventListener("end", onEndSession);
+            setVRRigidtransformToCamera();
+        });
+    }
+    function setVRRigidtransformToCamera() {
+        f.XRViewport.setNewRigidtransform(cmpCamera.mtxWorld.translation);
+    }
+    function onSqueeze() {
+        console.log("SQUEEZED");
+        let newPos = new f.Vector3(0, 0, 5);
+        f.XRViewport.setNewRigidtransform(newPos);
+    }
+    async function onSelect() {
+        let sphere = await f.Project.createGraphInstance(f.Project.resources["Graph|2022-10-26T13:26:47.063Z|65923"]);
+        graph.appendChild(sphere);
+    }
+    function onEndSession() {
+        f.Loop.stop();
+        f.Loop.start(f.LOOP_MODE.FRAME_REQUEST);
+    }
 })(VRIntegration || (VRIntegration = {}));
 //# sourceMappingURL=Script.js.map

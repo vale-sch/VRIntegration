@@ -29,7 +29,7 @@
           {
             "ƒ.ComponentTransform": {
               "local": {
-                "translation": "[0, -2, -10]",
+                "translation": "[0, 0, 0]",
                 "rotation": "[0, 0, 0]",
                 "scaling": "[1, 1, 1]"
               },
@@ -1362,8 +1362,8 @@
                     "direction": "diagonal",
                     "aspect": 1,
                     "pivot": {
-                      "translation": "[0, 6, -30]",
-                      "rotation": "[0, 0, 0]",
+                      "translation": "[0, 1, 15]",
+                      "rotation": "[0, 180, 0]",
                       "scaling": "[1, 1, 1]"
                     },
                     "Component": {

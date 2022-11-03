@@ -1904,7 +1904,6 @@ declare namespace FudgeCore {
         mtxPivot: Matrix4x4;
         clrBackground: Color;
         private projection;
-        private mtxProjection;
         private fieldOfView;
         private aspectRatio;
         private direction;
@@ -1918,7 +1917,7 @@ declare namespace FudgeCore {
          */
         get mtxWorldToView(): Matrix4x4;
         get mtxCameraInverse(): Matrix4x4;
-        get getMtxProjection(): Matrix4x4;
+        get mtxProjection(): Matrix4x4;
         resetWorldToView(): void;
         getProjection(): PROJECTION;
         getBackgroundEnabled(): boolean;
@@ -5155,7 +5154,7 @@ declare namespace FudgeCore {
          * for each node in the line of sight and return that as an unsorted {@link Pick}-array
          */
         static pickBranch(_nodes: Node[], _cmpCamera: ComponentCamera): Pick[];
-        static beginXRSession(): Promise<void>;
+        static initializeXR(_xrSessionMode: XRSessionMode, _xrReferenceSpaceType: XRReferenceSpaceType): Promise<void>;
         static draw(_cmpCamera: ComponentCamera): void;
         static drawXR(_cmpCamera: ComponentCamera, _xrFrame?: XRFrame): void;
         private static drawListAlpha;
@@ -5265,7 +5264,7 @@ declare namespace FudgeCore {
         /**
          * Connects the viewport to the given canvas to render the given branch to using the given camera-component, and names the viewport as given.
          */
-        initialize(_name: string, _branch: Node, _camera: ComponentCamera, _canvas: HTMLCanvasElement, _isVRSession?: boolean): void;
+        initialize(_name: string, _branch: Node, _camera: ComponentCamera, _canvas: HTMLCanvasElement): void;
         /**
          * Retrieve the size of the destination canvas as a rectangle, x and y are always 0
          */
@@ -5274,6 +5273,10 @@ declare namespace FudgeCore {
          * Retrieve the client rectangle the canvas is displayed and fit in, x and y are always 0
          */
         getClientRectangle(): Rectangle;
+        /**
+         * Set the branch to be drawn in the viewport.
+         */
+        setBranch(_branch: Node): void;
         /**
          * Set the context from canvas.
          */
@@ -5286,6 +5289,10 @@ declare namespace FudgeCore {
          * Retrieve the context from canvas
          */
         getContext(): CanvasRenderingContext2D;
+        /**
+         * Set the canvas.
+         */
+        setCanvas(_canvas: HTMLCanvasElement): void;
         /**
          * Draw this viewport displaying its branch. By default, the transforms in the branch are recalculated first.
          * Pass `false` if calculation was already done for this frame
@@ -5349,31 +5356,19 @@ declare namespace FudgeCore {
          * Returns a point in the browser page matching the given point of the viewport
          */
         pointClientToScreen(_client: Vector2): Vector2;
-        /**
-      * Set the branch to be drawn in the viewport.
-      */
-        protected setBranch(_branch: Node): void;
-        /**
-         * Set the canvas.
-         */
-        protected setCanvas(_canvas: HTMLCanvasElement): void;
     }
 }
 declare namespace FudgeCore {
     class XRViewport extends Viewport {
         #private;
-        static branch: Node;
         constructor();
         static set xrFrame(_xrFrame: XRFrame);
         static set xrSession(_xrSession: XRSession);
         static set xrReferenceSpace(_xrReferenceSpace: XRReferenceSpace);
         static get xrSession(): XRSession;
         static get xrReferenceSpace(): XRReferenceSpace;
-        static onSqueeze(): void;
-        static onSelect(): Promise<void>;
+        static setNewRigidtransform(_newPosition: Vector3, _newOrientation?: Vector3): void;
         initialize(_name: string, _branch: Node, _camera: ComponentCamera, _canvas: HTMLCanvasElement): void;
-        initializeVR(): void;
-        draw(_calculateTransforms?: boolean): void;
     }
 }
 declare namespace FudgeCore {

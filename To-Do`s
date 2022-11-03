@@ -15,11 +15,14 @@ Event System für User greifbar machen / wie umsetzen dass events erst feuern we
 
 
 -------------------To-Do`s--------------------------
+USER soll selbst normalen Loop starten + Button bauen + und dann LOOP_XR aufrufen sobald der Button gedrückt
 VR-Frame auf Camera setzen in initialize
- -> Danach immer Camera auf VR-Frame setzen 
+ -> Danach immer Camera auf VR-Frame setzen  (evtl entkoppeln!)
 
 Controller hinzufügen + Ray ausstrahlen
 
+
+UBOS reinlesen und evtl umsetzen 
 
 
 

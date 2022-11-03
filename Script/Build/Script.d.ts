@@ -1,3 +1,4 @@
+/// <reference types="../../FudgeCore/FudgeCore" />
 declare namespace VRIntegration {
     import f = FudgeCore;
     class CubeTranslation extends f.ComponentScript {
