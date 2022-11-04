@@ -115,7 +115,7 @@ var VRIntegration;
         f.Loop.start(f.LOOP_MODE.FRAME_REQUEST);
         checkForVRSupport();
     }
-    let oldHittedObject = null;
+    let actualHittedObject = null;
     function update(_event) {
         f.Physics.simulate();
         f.Physics.draw(cmpCamera, f.PHYSICS_DEBUGMODE.JOINTS_AND_COLLIDER);
@@ -125,10 +125,10 @@ var VRIntegration;
         f.Physics.debugDraw.debugRay(rayHit.rayOrigin, rayHit.rayEnd, new f.Color(1, 0, 0, 1));
         if (rayHit.hit) {
             if (rayHit.rigidbodyComponent.typeBody != f.BODY_TYPE.STATIC) {
-                if (rayHit.rigidbodyComponent.node != oldHittedObject && oldHittedObject != null)
-                    oldHittedObject.getComponent(f.ComponentMaterial).clrPrimary.a = 0.5;
-                oldHittedObject = rayHit.rigidbodyComponent.node;
-                oldHittedObject.getComponent(f.ComponentMaterial).clrPrimary.a = 1;
+                if (rayHit.rigidbodyComponent.node != actualHittedObject && actualHittedObject != null)
+                    actualHittedObject.getComponent(f.ComponentMaterial).clrPrimary.a = 0.5;
+                actualHittedObject = rayHit.rigidbodyComponent.node;
+                actualHittedObject.getComponent(f.ComponentMaterial).clrPrimary.a = 1;
             }
         }
         xrViewport.draw();
@@ -149,19 +149,19 @@ var VRIntegration;
         enterXRButton.addEventListener("click", async function () {
             await f.Render.initializeXR("immersive-vr", "local");
             f.Loop.stop();
+            f.XRViewport.setRigidtransfromToCamera();
             f.Loop.start(f.LOOP_MODE.FRAME_REQUEST_XR);
             f.XRViewport.xrSession.addEventListener("squeeze", onSqueeze);
             f.XRViewport.xrSession.addEventListener("select", onSelect);
             f.XRViewport.xrSession.addEventListener("end", onEndSession);
-            f.XRViewport.setXRRigidtransform(cmpCamera.mtxWorld);
         });
     }
     function onSqueeze() {
         console.log("SQUEEZED");
-        if (oldHittedObject != null) {
-            f.XRViewport.setXRRigidtransform(oldHittedObject.getComponent(f.ComponentTransform).mtxLocal);
-            oldHittedObject.getComponent(f.ComponentMaterial).clrPrimary.a = 0.5;
-            oldHittedObject = null;
+        if (actualHittedObject != null) {
+            f.XRViewport.setNewXRRigidtransform(actualHittedObject.getComponent(f.ComponentTransform).mtxLocal);
+            actualHittedObject.getComponent(f.ComponentMaterial).clrPrimary.a = 0.5;
+            actualHittedObject = null;
         }
     }
     async function onSelect() {
