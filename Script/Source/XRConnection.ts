@@ -74,6 +74,7 @@ namespace VRIntegration {
             f.XRViewport.xrSession.addEventListener("end", onEndSession);
 
             f.XRViewport.setXRRigidtransform(cmpCamera.mtxWorld);
+
         }
         );
     }
