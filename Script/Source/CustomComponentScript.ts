@@ -40,25 +40,22 @@ namespace VRIntegration {
           break;
       }
     }
-    private hasSetted: boolean = false;
+    private hasToTurn: boolean = false;
     private update = (_event: Event): void => {
-      this.node.getComponent(f.ComponentTransform).mtxLocal.rotateY(0.1);
-      if (this.hasSetted) return;
-      if (this.node.nChildren > 0 && this.node.name != "FudgeLogo")
-        this.node.getChildren().forEach(element => {
-          if (element.getComponent(f.ComponentMaterial))
-            element.getComponent(f.ComponentMaterial).clrPrimary = new f.Color(f.random.getRange(0, 1), f.random.getRange(0, 1), f.random.getRange(0, 1), 1);
-          element.getChildren().forEach(element => {
-            if (element.getComponent(f.ComponentMaterial))
-              element.getComponent(f.ComponentMaterial).clrPrimary = new f.Color(f.random.getRange(0, 1), f.random.getRange(0, 1), f.random.getRange(0, 1), 1);
-          });
-          this.hasSetted = true;
-        });
+      if (this.node.name != "FudgeLogo") {
+        if (this.node.getComponent(f.ComponentTransform).mtxLocal.translation.x < 15.1 && !this.hasToTurn) {
+          this.node.getComponent(f.ComponentRigidbody).applyForce(f.Vector3.X(2.2));
+          if (this.node.getComponent(f.ComponentTransform).mtxLocal.translation.x > 15)
+            this.hasToTurn = true;
+        }
+        else if (this.node.getComponent(f.ComponentTransform).mtxLocal.translation.x > -15.1 && this.hasToTurn) {
+          this.node.getComponent(f.ComponentRigidbody).applyForce(f.Vector3.X(-2.2));
+          if (this.node.getComponent(f.ComponentTransform).mtxLocal.translation.x < -15)
+            this.hasToTurn = false;
+        }
+      }
+      else
+        this.node.getComponent(f.ComponentTransform).mtxLocal.rotateY(0.1);
     }
-
-    // protected reduceMutator(_mutator: ƒ.Mutator): void {
-    //   // delete properties that should not be mutated
-    //   // undefined properties and private fields (#) will not be included by default
-    // }
   }
 }

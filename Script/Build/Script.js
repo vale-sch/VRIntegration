@@ -3,44 +3,6 @@ var VRIntegration;
 (function (VRIntegration) {
     var f = FudgeCore;
     f.Project.registerScriptNamespace(VRIntegration); // Register the namespace to FUDGE for serialization
-    class CubeTranslation extends f.ComponentScript {
-        // Register the script as component for use in the editor via drag&drop
-        static iSubclass = f.Component.registerSubclass(CubeTranslation);
-        // Properties may be mutated by users in the editor via the automatically created user interface
-        message = "CustomComponentScript added to ";
-        constructor() {
-            super();
-            // Don't start when running in editor
-            if (f.Project.mode == f.MODE.EDITOR)
-                return;
-            // Listen to this component being added to or removed from a node
-            this.addEventListener("componentAdd" /* f.EVENT.COMPONENT_ADD */, this.hndEvent);
-            this.addEventListener("componentRemove" /* f.EVENT.COMPONENT_REMOVE */, this.hndEvent);
-            this.addEventListener("nodeDeserialized" /* f.EVENT.NODE_DESERIALIZED */, this.hndEvent);
-        }
-        // Activate the functions of this component as response to events
-        hndEvent = (_event) => {
-            switch (_event.type) {
-                case "componentAdd" /* f.EVENT.COMPONENT_ADD */:
-                    this.node.getComponent(f.ComponentTransform).mtxLocal.translation = new f.Vector3(f.random.getRange(-10, 10), 1, f.random.getRange(-10, 10));
-                    this.node.getComponent(f.ComponentMaterial).clrPrimary = new f.Color(f.random.getRange(0, 1), f.random.getRange(0, 1), f.random.getRange(0, 1), 1);
-                    break;
-                case "componentRemove" /* f.EVENT.COMPONENT_REMOVE */:
-                    this.removeEventListener("componentAdd" /* f.EVENT.COMPONENT_ADD */, this.hndEvent);
-                    this.removeEventListener("componentRemove" /* f.EVENT.COMPONENT_REMOVE */, this.hndEvent);
-                    break;
-                case "nodeDeserialized" /* f.EVENT.NODE_DESERIALIZED */:
-                    // if deserialized the node is now fully reconstructed and access to all its components and children is possible
-                    break;
-            }
-        };
-    }
-    VRIntegration.CubeTranslation = CubeTranslation;
-})(VRIntegration || (VRIntegration = {}));
-var VRIntegration;
-(function (VRIntegration) {
-    var f = FudgeCore;
-    f.Project.registerScriptNamespace(VRIntegration); // Register the namespace to FUDGE for serialization
     class CustomComponentScript extends f.ComponentScript {
         // Register the script as component for use in the editor via drag&drop
         static iSubclass = f.Component.registerSubclass(CustomComponentScript);
@@ -72,21 +34,22 @@ var VRIntegration;
                     break;
             }
         };
-        hasSetted = false;
+        hasToTurn = false;
         update = (_event) => {
-            this.node.getComponent(f.ComponentTransform).mtxLocal.rotateY(0.1);
-            if (this.hasSetted)
-                return;
-            if (this.node.nChildren > 0 && this.node.name != "FudgeLogo")
-                this.node.getChildren().forEach(element => {
-                    if (element.getComponent(f.ComponentMaterial))
-                        element.getComponent(f.ComponentMaterial).clrPrimary = new f.Color(f.random.getRange(0, 1), f.random.getRange(0, 1), f.random.getRange(0, 1), 1);
-                    element.getChildren().forEach(element => {
-                        if (element.getComponent(f.ComponentMaterial))
-                            element.getComponent(f.ComponentMaterial).clrPrimary = new f.Color(f.random.getRange(0, 1), f.random.getRange(0, 1), f.random.getRange(0, 1), 1);
-                    });
-                    this.hasSetted = true;
-                });
+            if (this.node.name != "FudgeLogo") {
+                if (this.node.getComponent(f.ComponentTransform).mtxLocal.translation.x < 15.1 && !this.hasToTurn) {
+                    this.node.getComponent(f.ComponentRigidbody).applyForce(f.Vector3.X(2.2));
+                    if (this.node.getComponent(f.ComponentTransform).mtxLocal.translation.x > 15)
+                        this.hasToTurn = true;
+                }
+                else if (this.node.getComponent(f.ComponentTransform).mtxLocal.translation.x > -15.1 && this.hasToTurn) {
+                    this.node.getComponent(f.ComponentRigidbody).applyForce(f.Vector3.X(-2.2));
+                    if (this.node.getComponent(f.ComponentTransform).mtxLocal.translation.x < -15)
+                        this.hasToTurn = false;
+                }
+            }
+            else
+                this.node.getComponent(f.ComponentTransform).mtxLocal.rotateY(0.1);
         };
     }
     VRIntegration.CustomComponentScript = CustomComponentScript;
@@ -94,10 +57,47 @@ var VRIntegration;
 var VRIntegration;
 (function (VRIntegration) {
     var f = FudgeCore;
+    f.Project.registerScriptNamespace(VRIntegration); // Register the namespace to FUDGE for serialization
+    class RandomSphereSpawn extends f.ComponentScript {
+        // Register the script as component for use in the editor via drag&drop
+        static iSubclass = f.Component.registerSubclass(RandomSphereSpawn);
+        // Properties may be mutated by users in the editor via the automatically created user interface
+        message = "CustomComponentScript added to ";
+        constructor() {
+            super();
+            // Don't start when running in editor
+            if (f.Project.mode == f.MODE.EDITOR)
+                return;
+            // Listen to this component being added to or removed from a node
+            this.addEventListener("componentAdd" /* f.EVENT.COMPONENT_ADD */, this.hndEvent);
+            this.addEventListener("componentRemove" /* f.EVENT.COMPONENT_REMOVE */, this.hndEvent);
+            this.addEventListener("nodeDeserialized" /* f.EVENT.NODE_DESERIALIZED */, this.hndEvent);
+        }
+        // Activate the functions of this component as response to events
+        hndEvent = (_event) => {
+            switch (_event.type) {
+                case "componentAdd" /* f.EVENT.COMPONENT_ADD */:
+                    this.node.getComponent(f.ComponentMaterial).clrPrimary = new f.Color(f.random.getRange(0, 1), f.random.getRange(0, 1), f.random.getRange(0, 1), 1);
+                    break;
+                case "componentRemove" /* f.EVENT.COMPONENT_REMOVE */:
+                    this.removeEventListener("componentAdd" /* f.EVENT.COMPONENT_ADD */, this.hndEvent);
+                    this.removeEventListener("componentRemove" /* f.EVENT.COMPONENT_REMOVE */, this.hndEvent);
+                    break;
+                case "nodeDeserialized" /* f.EVENT.NODE_DESERIALIZED */:
+                    // if deserialized the node is now fully reconstructed and access to all its components and children is possible
+                    break;
+            }
+        };
+    }
+    VRIntegration.RandomSphereSpawn = RandomSphereSpawn;
+})(VRIntegration || (VRIntegration = {}));
+var VRIntegration;
+(function (VRIntegration) {
+    var f = FudgeCore;
     let xrViewport = new f.XRViewport();
     let graph = null;
     let cmpCamera = null;
-    let ray = null;
+    let rayHit = null;
     window.addEventListener("load", init);
     async function init() {
         await FudgeCore.Project.loadResources("Internal.json");
@@ -111,14 +111,26 @@ var VRIntegration;
         cmpCamera = graph.getChildrenByName("Camera")[0].getComponent(f.ComponentCamera);
         xrViewport.initialize("Viewport", graph, cmpCamera, canvas);
         xrViewport.draw();
-        ray = new f.Ray(f.Vector3.Z(1), f.Vector3.Y(1), 500);
         f.Loop.addEventListener("loopFrame" /* f.EVENT.LOOP_FRAME */, update);
         f.Loop.start(f.LOOP_MODE.FRAME_REQUEST);
         checkForVRSupport();
     }
+    let oldHittedObject = null;
     function update(_event) {
-        let picks = f.Picker.pickRay(graph.getChildrenByName("FudgeLogo")[0].getChildren(), ray, 0.1, 15);
-        console.log(picks);
+        f.Physics.simulate();
+        f.Physics.draw(cmpCamera, f.PHYSICS_DEBUGMODE.JOINTS_AND_COLLIDER);
+        f.Physics.debugDraw.setDebugMode(f.PHYSICS_DEBUGMODE.JOINTS_AND_COLLIDER);
+        let vecZ = cmpCamera.mtxWorld.getZ();
+        rayHit = f.Physics.raycast(cmpCamera.mtxWorld.translation, new f.Vector3(-vecZ.x, -vecZ.y, -vecZ.z), 80, true);
+        f.Physics.debugDraw.debugRay(rayHit.rayOrigin, rayHit.rayEnd, new f.Color(1, 0, 0, 1));
+        if (rayHit.hit) {
+            if (rayHit.rigidbodyComponent.typeBody != f.BODY_TYPE.STATIC) {
+                if (rayHit.rigidbodyComponent.node != oldHittedObject && oldHittedObject != null)
+                    oldHittedObject.getComponent(f.ComponentMaterial).clrPrimary.a = 0.5;
+                oldHittedObject = rayHit.rigidbodyComponent.node;
+                oldHittedObject.getComponent(f.ComponentMaterial).clrPrimary.a = 1;
+            }
+        }
         xrViewport.draw();
     }
     function checkForVRSupport() {
@@ -146,13 +158,15 @@ var VRIntegration;
     }
     function onSqueeze() {
         console.log("SQUEEZED");
-        // let newPos: f.Vector3 = new f.Vector3(0, 0, 5);
-        // f.XRViewport.setNewRigidtransform(newPos);
+        if (oldHittedObject != null) {
+            f.XRViewport.setXRRigidtransform(oldHittedObject.getComponent(f.ComponentTransform).mtxLocal);
+            oldHittedObject.getComponent(f.ComponentMaterial).clrPrimary.a = 0.5;
+            oldHittedObject = null;
+        }
     }
     async function onSelect() {
         let sphere = await f.Project.createGraphInstance(f.Project.resources["Graph|2022-10-26T13:26:47.063Z|65923"]);
         graph.appendChild(sphere);
-        f.XRViewport.setXRRigidtransform(sphere.getChild(0).mtxLocal);
     }
     function onEndSession() {
         f.Loop.stop();

@@ -2,9 +2,9 @@ namespace VRIntegration {
     import f = FudgeCore;
     f.Project.registerScriptNamespace(VRIntegration);  // Register the namespace to FUDGE for serialization
 
-    export class CubeTranslation extends f.ComponentScript {
+    export class RandomSphereSpawn extends f.ComponentScript {
         // Register the script as component for use in the editor via drag&drop
-        public static readonly iSubclass: number = f.Component.registerSubclass(CubeTranslation);
+        public static readonly iSubclass: number = f.Component.registerSubclass(RandomSphereSpawn);
         // Properties may be mutated by users in the editor via the automatically created user interface
         public message: string = "CustomComponentScript added to ";
 
@@ -26,9 +26,7 @@ namespace VRIntegration {
         public hndEvent = (_event: Event): void => {
             switch (_event.type) {
                 case f.EVENT.COMPONENT_ADD:
-                    this.node.getComponent(f.ComponentTransform).mtxLocal.translation = new f.Vector3(f.random.getRange(-10, 10), 1, f.random.getRange(-10, 10))
                     this.node.getComponent(f.ComponentMaterial).clrPrimary = new f.Color(f.random.getRange(0, 1), f.random.getRange(0, 1), f.random.getRange(0, 1), 1);
-
                     break;
                 case f.EVENT.COMPONENT_REMOVE:
                     this.removeEventListener(f.EVENT.COMPONENT_ADD, this.hndEvent);
