@@ -97,7 +97,8 @@ var VRIntegration;
     let xrViewport = new f.XRViewport();
     let graph = null;
     let cmpCamera = null;
-    let rayHit = null;
+    let rightController = null;
+    let leftController = null;
     window.addEventListener("load", init);
     async function init() {
         await FudgeCore.Project.loadResources("Internal.json");
@@ -109,28 +110,40 @@ var VRIntegration;
         }
         let canvas = document.querySelector("canvas");
         cmpCamera = graph.getChildrenByName("Camera")[0].getComponent(f.ComponentCamera);
+        xrViewport.physicsDebugMode = f.PHYSICS_DEBUGMODE.JOINTS_AND_COLLIDER;
         xrViewport.initialize("Viewport", graph, cmpCamera, canvas);
         xrViewport.draw();
+        rightController = graph.getChildrenByName("rightController")[0];
+        leftController = graph.getChildrenByName("leftController")[0];
         f.Loop.addEventListener("loopFrame" /* f.EVENT.LOOP_FRAME */, update);
         f.Loop.start(f.LOOP_MODE.FRAME_REQUEST);
         checkForVRSupport();
     }
     let actualHittedObject = null;
     function update(_event) {
-        f.Physics.simulate();
-        f.Physics.draw(cmpCamera, f.PHYSICS_DEBUGMODE.JOINTS_AND_COLLIDER);
-        f.Physics.debugDraw.setDebugMode(f.PHYSICS_DEBUGMODE.JOINTS_AND_COLLIDER);
-        let vecZ = cmpCamera.mtxWorld.getZ();
-        rayHit = f.Physics.raycast(cmpCamera.mtxWorld.translation, new f.Vector3(-vecZ.x, -vecZ.y, -vecZ.z), 80, true);
-        f.Physics.debugDraw.debugRay(rayHit.rayOrigin, rayHit.rayEnd, new f.Color(1, 0, 0, 1));
-        if (rayHit.hit) {
-            if (rayHit.rigidbodyComponent.typeBody != f.BODY_TYPE.STATIC) {
-                if (rayHit.rigidbodyComponent.node != actualHittedObject && actualHittedObject != null)
+        rightController.getComponent(f.ComponentTransform).mtxLocal = f.XRViewport.rightController.mtxLocal;
+        leftController.getComponent(f.ComponentTransform).mtxLocal = f.XRViewport.leftController.mtxLocal;
+        let vecZRightCntrl = f.XRViewport.rightController.mtxLocal.getZ();
+        let rayHitR = f.Physics.raycast(f.XRViewport.rightController.mtxLocal.translation, new f.Vector3(-vecZRightCntrl.x, -vecZRightCntrl.y, -vecZRightCntrl.z), 80, true);
+        if (rayHitR.hit) {
+            if (rayHitR.rigidbodyComponent.typeBody != f.BODY_TYPE.STATIC && rayHitR.rigidbodyComponent.node.name != "New Node") {
+                if (rayHitR.rigidbodyComponent.node != actualHittedObject && actualHittedObject != null)
                     actualHittedObject.getComponent(f.ComponentMaterial).clrPrimary.a = 0.5;
-                actualHittedObject = rayHit.rigidbodyComponent.node;
+                actualHittedObject = rayHitR.rigidbodyComponent.node;
                 actualHittedObject.getComponent(f.ComponentMaterial).clrPrimary.a = 1;
             }
         }
+        let vecZLeftCntrl = f.XRViewport.leftController.mtxLocal.getZ();
+        let rayHitL = f.Physics.raycast(f.XRViewport.leftController.mtxLocal.translation, new f.Vector3(-vecZLeftCntrl.x, -vecZLeftCntrl.y, -vecZLeftCntrl.z), 80, true);
+        if (rayHitL.hit) {
+            if (rayHitL.rigidbodyComponent.typeBody != f.BODY_TYPE.STATIC && rayHitL.rigidbodyComponent.node.name != "New Node") {
+                if (rayHitL.rigidbodyComponent.node != actualHittedObject && actualHittedObject != null)
+                    actualHittedObject.getComponent(f.ComponentMaterial).clrPrimary.a = 0.5;
+                actualHittedObject = rayHitL.rigidbodyComponent.node;
+                actualHittedObject.getComponent(f.ComponentMaterial).clrPrimary.a = 1;
+            }
+        }
+        f.Physics.simulate();
         xrViewport.draw();
     }
     function checkForVRSupport() {
@@ -149,7 +162,7 @@ var VRIntegration;
         enterXRButton.addEventListener("click", async function () {
             await f.Render.initializeXR("immersive-vr", "local");
             f.Loop.stop();
-            f.XRViewport.setRigidtransfromToCamera();
+            f.XRViewport.setNewXRRigidtransform(f.Vector3.DIFFERENCE(f.Vector3.ZERO(), cmpCamera.mtxWorld.translation));
             f.Loop.start(f.LOOP_MODE.FRAME_REQUEST_XR);
             f.XRViewport.xrSession.addEventListener("squeeze", onSqueeze);
             f.XRViewport.xrSession.addEventListener("select", onSelect);
@@ -159,7 +172,7 @@ var VRIntegration;
     function onSqueeze() {
         console.log("SQUEEZED");
         if (actualHittedObject != null) {
-            f.XRViewport.setNewXRRigidtransform(actualHittedObject.getComponent(f.ComponentTransform).mtxLocal);
+            f.XRViewport.setNewXRRigidtransform(f.Vector3.DIFFERENCE(cmpCamera.mtxWorld.translation, actualHittedObject.getComponent(f.ComponentTransform).mtxLocal.translation));
             actualHittedObject.getComponent(f.ComponentMaterial).clrPrimary.a = 0.5;
             actualHittedObject = null;
         }
