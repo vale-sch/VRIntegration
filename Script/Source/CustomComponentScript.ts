@@ -43,14 +43,14 @@ namespace VRIntegration {
     private hasToTurn: boolean = false;
     private update = (_event: Event): void => {
       if (this.node.name != "FudgeLogo") {
-        if (this.node.getComponent(f.ComponentTransform).mtxLocal.translation.x < 15.1 && !this.hasToTurn) {
+        if (this.node.getComponent(f.ComponentTransform).mtxLocal.translation.x < 9.1 && !this.hasToTurn) {
           this.node.getComponent(f.ComponentRigidbody).applyForce(f.Vector3.X(2.2));
-          if (this.node.getComponent(f.ComponentTransform).mtxLocal.translation.x > 15)
+          if (this.node.getComponent(f.ComponentTransform).mtxLocal.translation.x > 9)
             this.hasToTurn = true;
         }
-        else if (this.node.getComponent(f.ComponentTransform).mtxLocal.translation.x > -15.1 && this.hasToTurn) {
+        else if (this.node.getComponent(f.ComponentTransform).mtxLocal.translation.x > -9.1 && this.hasToTurn) {
           this.node.getComponent(f.ComponentRigidbody).applyForce(f.Vector3.X(-2.2));
-          if (this.node.getComponent(f.ComponentTransform).mtxLocal.translation.x < -15)
+          if (this.node.getComponent(f.ComponentTransform).mtxLocal.translation.x < -9)
             this.hasToTurn = false;
         }
       }

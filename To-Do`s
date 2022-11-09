@@ -1,8 +1,5 @@
 -----------------Questions--------------------------
-Code zeigen ( ist das so sinnvoll / wie sollte ich es anders machen)
-Uniforms im Shader
-Loop Methode wird unterbrochen sobald es startet
-Event System für User greifbar machen / wie umsetzen dass events erst feuern wenn VR session gegeben ist
+
 
 
 
@@ -12,20 +9,22 @@ Event System für User greifbar machen / wie umsetzen dass events erst feuern we
 
 -----------------Questions--------------------------
 
+---------------PossibleTestScenes-------------------
+-> Empty Room - Setup Demonstration
+-> Controller Demonstration
+-> Physics Room - Rays Interaction 
+-> Physics Room - Like Beat Saber
+-> Audio Room 
+-> mehrere Viewports auf einem Canvas // verschiedene Perspektiven (z.B: Autospiegel)
+
+---------------PossibleTestScenes-------------------
 
 
 -------------------To-Do`s--------------------------
-USER soll selbst normalen Loop starten + Button bauen + und dann LOOP_XR aufrufen sobald der Button gedrückt
-VR-Frame auf Camera setzen in initialize
- -> Danach immer Camera auf VR-Frame setzen  (evtl entkoppeln!)
 
-Controller hinzufügen + Ray ausstrahlen
 
 
 UBOS reinlesen und evtl umsetzen 
-
-
-
 
 mehrere Viewports auf einem Canvas // verschiedene Perspektiven (z.B: Autospiegel)
 Camera Picking (gibt es die echte Camera)

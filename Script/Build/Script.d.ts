@@ -11,13 +11,4 @@ declare namespace VRIntegration {
     }
 }
 declare namespace VRIntegration {
-    import f = FudgeCore;
-    class RandomSphereSpawn extends f.ComponentScript {
-        static readonly iSubclass: number;
-        message: string;
-        constructor();
-        hndEvent: (_event: Event) => void;
-    }
-}
-declare namespace VRIntegration {
 }
