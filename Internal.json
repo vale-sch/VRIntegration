@@ -89,6 +89,14 @@
       "size": 0.30000000000000004
     }
   },
+  "Audio|2022-11-10T12:21:19.398Z|57946": {
+    "ƒ.Audio": {
+      "url": "Audio\\ambient.mp3",
+      "idResource": "Audio|2022-11-10T12:21:19.398Z|57946",
+      "name": "Audio\\ambient.mp3",
+      "type": "Audio"
+    }
+  },
   "Graph|2022-10-16T12:29:07.468Z|66213": {
     "ƒ.Graph": {
       "name": "VrSceneTestFudge",
@@ -2667,7 +2675,7 @@
                 {
                   "ƒ.ComponentTransform": {
                     "local": {
-                      "translation": "[9, 0, -9]",
+                      "translation": "[0, 0, -7]",
                       "rotation": "[0, 0, 0]",
                       "scaling": "[1, 1, 1]"
                     },
@@ -2699,6 +2707,17 @@
                     "Component": {
                       "active": true
                     }
+                  }
+                }
+              ],
+              "ComponentAudio": [
+                {
+                  "ƒ.ComponentAudio": {
+                    "active": true,
+                    "idResource": "Audio|2022-11-10T12:21:19.398Z|57946",
+                    "playing": true,
+                    "loop": true,
+                    "volume": 0.19999998807907104
                   }
                 }
               ]

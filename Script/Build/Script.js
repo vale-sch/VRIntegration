@@ -37,14 +37,14 @@ var VRIntegration;
         hasToTurn = false;
         update = (_event) => {
             if (this.node.name != "FudgeLogo") {
-                if (this.node.getComponent(f.ComponentTransform).mtxLocal.translation.x < 9.1 && !this.hasToTurn) {
+                if (this.node.getComponent(f.ComponentTransform).mtxLocal.translation.x < 6.1 && !this.hasToTurn) {
                     this.node.getComponent(f.ComponentRigidbody).applyForce(f.Vector3.X(2.2));
-                    if (this.node.getComponent(f.ComponentTransform).mtxLocal.translation.x > 9)
+                    if (this.node.getComponent(f.ComponentTransform).mtxLocal.translation.x > 6)
                         this.hasToTurn = true;
                 }
-                else if (this.node.getComponent(f.ComponentTransform).mtxLocal.translation.x > -9.1 && this.hasToTurn) {
+                else if (this.node.getComponent(f.ComponentTransform).mtxLocal.translation.x > -6.1 && this.hasToTurn) {
                     this.node.getComponent(f.ComponentRigidbody).applyForce(f.Vector3.X(-2.2));
-                    if (this.node.getComponent(f.ComponentTransform).mtxLocal.translation.x < -9)
+                    if (this.node.getComponent(f.ComponentTransform).mtxLocal.translation.x < -6)
                         this.hasToTurn = false;
                 }
             }
@@ -63,9 +63,6 @@ var VRIntegration;
     let rightController = null;
     let leftController = null;
     window.addEventListener("load", init);
-    let background = new f.Audio("/Audio/ambient.mp3");
-    let cmpAudBackground = new f.ComponentAudio(background);
-    cmpAudBackground.volume = 0.25;
     async function init() {
         await FudgeCore.Project.loadResources("Internal.json");
         graph = f.Project.resources[document.head.querySelector("meta[autoView]").getAttribute("autoView")];
@@ -76,23 +73,21 @@ var VRIntegration;
         }
         let canvas = document.querySelector("canvas");
         cmpCamera = graph.getChildrenByName("Camera")[0].getComponent(f.ComponentCamera);
+        setupAudio();
         xrViewport.physicsDebugMode = f.PHYSICS_DEBUGMODE.JOINTS_AND_COLLIDER;
         xrViewport.initialize("Viewport", graph, cmpCamera, canvas);
-        xrViewport.draw();
         rightController = graph.getChildrenByName("rightController")[0];
         leftController = graph.getChildrenByName("leftController")[0];
+        xrViewport.draw();
         f.Loop.addEventListener("loopFrame" /* f.EVENT.LOOP_FRAME */, update);
         f.Loop.start(f.LOOP_MODE.FRAME_REQUEST);
         checkForVRSupport();
-        setupAudio();
     }
-    let musicNode = null;
     function setupAudio() {
         let cmpListener = new f.ComponentAudioListener();
-        musicNode = graph.getChildrenByName("New Node")[0];
         cmpCamera.node.addComponent(cmpListener);
-        musicNode.addComponent(cmpAudBackground);
         f.AudioManager.default.listenTo(graph);
+        f.AudioManager.default.listenWith(cmpCamera.node.getComponent(f.ComponentAudioListener));
     }
     function checkForVRSupport() {
         navigator.xr.isSessionSupported("immersive-vr").then((supported) => {
@@ -110,10 +105,6 @@ var VRIntegration;
         enterXRButton.addEventListener("click", async function () {
             await f.Render.initializeXR("immersive-vr", "local");
             f.Loop.stop();
-            // cmpAudBackground.play(true);
-            cmpAudBackground.volume = 0.25;
-            cmpAudBackground.loop = true;
-            console.log(cmpAudBackground.isPlaying);
             f.XRViewport.setNewXRRigidtransform(f.Vector3.DIFFERENCE(f.Vector3.ZERO(), cmpCamera.mtxWorld.translation));
             f.Loop.start(f.LOOP_MODE.FRAME_REQUEST_XR);
             f.XRViewport.xrSession.addEventListener("squeeze", onSqueeze);
@@ -177,6 +168,7 @@ var VRIntegration;
         }
         f.Physics.simulate();
         xrViewport.draw();
+        f.AudioManager.default.update();
     }
     function onSqueeze(_event) {
         if (actualTeleportationObj) {
@@ -198,23 +190,25 @@ var VRIntegration;
         }
     }
     function onSelectEnd(_event) {
-        if (_event.inputSource.handedness == "right") {
-            actualThrowObject.getComponent(f.ComponentRigidbody).setVelocity(f.Vector3.ZERO());
-            let velocity = f.Vector3.DIFFERENCE(rightController.mtxLocal.translation, cmpCamera.mtxPivot.translation);
-            velocity.scale(20);
-            actualThrowObject.getComponent(f.ComponentRigidbody).addVelocity(velocity);
-            actualThrowObject.getComponent(f.ComponentMaterial).clrPrimary.a = 0.5;
-            actualThrowObject = null;
-            selectPressedRight = false;
-        }
-        else {
-            actualThrowObject.getComponent(f.ComponentRigidbody).setVelocity(f.Vector3.ZERO());
-            let direction = f.Vector3.DIFFERENCE(leftController.mtxLocal.translation, cmpCamera.mtxPivot.translation);
-            direction.scale(20);
-            actualThrowObject.getComponent(f.ComponentRigidbody).addVelocity(direction);
-            actualThrowObject.getComponent(f.ComponentMaterial).clrPrimary.a = 0.5;
-            actualThrowObject = null;
-            selectPressedLeft = false;
+        if (actualThrowObject) {
+            if (_event.inputSource.handedness == "right") {
+                actualThrowObject.getComponent(f.ComponentRigidbody).setVelocity(f.Vector3.ZERO());
+                let velocity = f.Vector3.DIFFERENCE(rightController.mtxLocal.translation, cmpCamera.mtxPivot.translation);
+                velocity.scale(20);
+                actualThrowObject.getComponent(f.ComponentRigidbody).addVelocity(velocity);
+                actualThrowObject.getComponent(f.ComponentMaterial).clrPrimary.a = 0.5;
+                actualThrowObject = null;
+                selectPressedRight = false;
+            }
+            else {
+                actualThrowObject.getComponent(f.ComponentRigidbody).setVelocity(f.Vector3.ZERO());
+                let direction = f.Vector3.DIFFERENCE(leftController.mtxLocal.translation, cmpCamera.mtxPivot.translation);
+                direction.scale(20);
+                actualThrowObject.getComponent(f.ComponentRigidbody).addVelocity(direction);
+                actualThrowObject.getComponent(f.ComponentMaterial).clrPrimary.a = 0.5;
+                actualThrowObject = null;
+                selectPressedLeft = false;
+            }
         }
     }
     function onEndSession() {
