@@ -97,6 +97,20 @@
       "type": "Audio"
     }
   },
+  "Material|2022-11-16T15:44:16.562Z|68520": {
+    "ƒ.Material": {
+      "name": "ShaderGouraud",
+      "idResource": "Material|2022-11-16T15:44:16.562Z|68520",
+      "shader": "ShaderGouraud",
+      "coat": {
+        "ƒ.CoatRemissive": {
+          "color": "[1, 1, 1, 1]",
+          "diffuse": 1,
+          "specular": 0
+        }
+      }
+    }
+  },
   "Graph|2022-10-16T12:29:07.468Z|66213": {
     "ƒ.Graph": {
       "name": "VrSceneTestFudge",
@@ -127,13 +141,47 @@
                 {
                   "ƒ.ComponentLight": {
                     "pivot": {
-                      "translation": "[0, 0, 0]",
+                      "translation": "[0, 20, 0]",
                       "rotation": "[0, 0, 0]",
-                      "scaling": "[1, 1, 1]"
+                      "scaling": "[999, 999, 999]"
                     },
                     "light": {
-                      "ƒ.LightAmbient": {
+                      "ƒ.LightPoint": {
                         "color": "[1, 1, 1, 1]"
+                      }
+                    },
+                    "Component": {
+                      "active": true
+                    }
+                  }
+                },
+                {
+                  "ƒ.ComponentLight": {
+                    "pivot": {
+                      "translation": "[-7, 27, 1]",
+                      "rotation": "[200, 70, 123]",
+                      "scaling": "[990, 999, 999]"
+                    },
+                    "light": {
+                      "ƒ.LightSpot": {
+                        "color": "[1, 0, 0, 1]"
+                      }
+                    },
+                    "Component": {
+                      "active": true
+                    }
+                  }
+                },
+                {
+                  "ƒ.ComponentLight": {
+                    "pivot": {
+                      "translation": "[0, 3, 0]",
+                      "rotation": "[19, 17100, 12]",
+                      "scaling": "[25, 25, 25]"
+                    },
+                    "light": {
+                      "ƒ.LightDirectional": {
+                        "color": "[0, 1, 0.06666666666666667, 1]"
                       }
                     },
                     "Component": {
@@ -170,7 +218,7 @@
                 {
                   "ƒ.ComponentMaterial": {
                     "sortForAlpha": false,
-                    "clrPrimary": "[0.5294117647058824, 0.5294117647058824, 0.5294117647058824, 1]",
+                    "clrPrimary": "[0.4588235294117647, 0.4588235294117647, 0.4588235294117647, 1]",
                     "clrSecondary": "[1, 1, 1, 1]",
                     "pivot": {
                       "translation": "[0, 0]",
@@ -180,7 +228,7 @@
                     "Component": {
                       "active": true
                     },
-                    "idMaterial": "Material|2022-10-16T12:30:00.346Z|27603"
+                    "idMaterial": "Material|2022-11-16T15:44:16.562Z|68520"
                   }
                 }
               ],
@@ -1942,7 +1990,7 @@
                 {
                   "ƒ.ComponentMaterial": {
                     "sortForAlpha": false,
-                    "clrPrimary": "[0.6, 0.34901960784313724, 0, 0.47]",
+                    "clrPrimary": "[1, 1, 1, 0.35]",
                     "clrSecondary": "[1, 1, 1, 1]",
                     "pivot": {
                       "translation": "[0, 0]",
@@ -1952,7 +2000,7 @@
                     "Component": {
                       "active": true
                     },
-                    "idMaterial": "Material|2022-10-16T12:30:00.346Z|27603"
+                    "idMaterial": "Material|2022-11-08T16:38:11.785Z|35904"
                   }
                 }
               ],
@@ -2192,7 +2240,7 @@
                       {
                         "ƒ.ComponentMaterial": {
                           "sortForAlpha": false,
-                          "clrPrimary": "[1, 0, 0, 0.44]",
+                          "clrPrimary": "[0, 1, 0.06666666666666667, 0.4]",
                           "clrSecondary": "[1, 1, 1, 1]",
                           "pivot": {
                             "translation": "[0, 0]",
@@ -2202,7 +2250,7 @@
                           "Component": {
                             "active": true
                           },
-                          "idMaterial": "Material|2022-10-16T12:30:00.346Z|27603"
+                          "idMaterial": "Material|2022-11-16T15:44:16.562Z|68520"
                         }
                       }
                     ],
@@ -2273,7 +2321,7 @@
                       {
                         "ƒ.ComponentMaterial": {
                           "sortForAlpha": false,
-                          "clrPrimary": "[0.9333333333333333, 0, 1, 0.57]",
+                          "clrPrimary": "[0, 0.16470588235294117, 1, 0.53]",
                           "clrSecondary": "[1, 1, 1, 1]",
                           "pivot": {
                             "translation": "[0, 0]",
@@ -2283,7 +2331,7 @@
                           "Component": {
                             "active": true
                           },
-                          "idMaterial": "Material|2022-10-16T12:30:00.346Z|27603"
+                          "idMaterial": "Material|2022-11-16T15:44:16.562Z|68520"
                         }
                       }
                     ],
@@ -2354,7 +2402,7 @@
                       {
                         "ƒ.ComponentMaterial": {
                           "sortForAlpha": false,
-                          "clrPrimary": "[0, 0.25098039215686274, 1, 0.47]",
+                          "clrPrimary": "[1, 0, 0.7333333333333333, 0.43]",
                           "clrSecondary": "[1, 1, 1, 1]",
                           "pivot": {
                             "translation": "[0, 0]",
@@ -2364,7 +2412,7 @@
                           "Component": {
                             "active": true
                           },
-                          "idMaterial": "Material|2022-10-16T12:30:00.346Z|27603"
+                          "idMaterial": "Material|2022-11-16T15:44:16.562Z|68520"
                         }
                       }
                     ],
@@ -2435,7 +2483,7 @@
                       {
                         "ƒ.ComponentMaterial": {
                           "sortForAlpha": false,
-                          "clrPrimary": "[0, 0.8509803921568627, 1, 0.5]",
+                          "clrPrimary": "[1, 0, 0, 0.4]",
                           "clrSecondary": "[1, 1, 1, 1]",
                           "pivot": {
                             "translation": "[0, 0]",
@@ -2445,7 +2493,7 @@
                           "Component": {
                             "active": true
                           },
-                          "idMaterial": "Material|2022-10-16T12:30:00.346Z|27603"
+                          "idMaterial": "Material|2022-11-16T15:44:16.562Z|68520"
                         }
                       }
                     ],
