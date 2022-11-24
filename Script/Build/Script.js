@@ -89,6 +89,7 @@ var VRIntegration;
         f.AudioManager.default.listenTo(graph);
         f.AudioManager.default.listenWith(cmpCamera.node.getComponent(f.ComponentAudioListener));
     }
+    // check device/browser capabilities for XR Session 
     function checkForVRSupport() {
         navigator.xr.isSessionSupported("immersive-vr").then((supported) => {
             if (supported)
@@ -97,22 +98,32 @@ var VRIntegration;
                 console.log("Session not supported");
         });
     }
+    //main function to start XR Session
     function initializeVR() {
+        //create XR Button -> Browser 
         let enterXRButton = document.createElement("button");
         enterXRButton.id = "xrButton";
         enterXRButton.innerHTML = "Enter VR";
         document.body.appendChild(enterXRButton);
         enterXRButton.addEventListener("click", async function () {
+            //initalizes xr session 
             await xrViewport.initializeXR("immersive-vr", "local", true);
+            //stop normal loop of winodws.animationFrame
             f.Loop.stop();
-            xrViewport.xrTool.setNewXRRigidtransform(f.Vector3.DIFFERENCE(f.Vector3.ZERO(), cmpCamera.mtxWorld.translation));
+            //set controllers matrix information to component transform from node controller made in FUDGE Editor
+            rightController.getComponent(f.ComponentTransform).mtxLocal = xrViewport.xr.rightController.mtxLocal;
+            leftController.getComponent(f.ComponentTransform).mtxLocal = xrViewport.xr.leftController.mtxLocal;
+            xrViewport.xr.leftController.isRayHitInfo = true;
+            xrViewport.xr.rightController.isRayHitInfo = true;
+            //set controllers buttons events
+            xrViewport.xr.xrSession.addEventListener("squeeze", onSqueeze);
+            xrViewport.xr.xrSession.addEventListener("selectstart", onSelectStart);
+            xrViewport.xr.xrSession.addEventListener("selectend", onSelectEnd);
+            xrViewport.xr.xrSession.addEventListener("end", onEndSession);
+            //set xr transform to matrix from ComponentCamera -> xr transform = camera transform
+            xrViewport.xr.setNewXRRigidtransform(f.Vector3.DIFFERENCE(f.Vector3.ZERO(), cmpCamera.mtxWorld.translation));
+            //start xrSession.animationFrame instead of window.animationFrame, your xr-session is ready to go!
             f.Loop.start(f.LOOP_MODE.FRAME_REQUEST_XR);
-            xrViewport.xrTool.xrSession.addEventListener("squeeze", onSqueeze);
-            xrViewport.xrTool.xrSession.addEventListener("selectstart", onSelectStart);
-            xrViewport.xrTool.xrSession.addEventListener("selectend", onSelectEnd);
-            xrViewport.xrTool.xrSession.addEventListener("end", onEndSession);
-            xrViewport.xrTool.leftController.isRayHitInfo = true;
-            xrViewport.xrTool.rightController.isRayHitInfo = true;
         });
     }
     let actualTeleportationObj = null;
@@ -122,34 +133,32 @@ var VRIntegration;
     let hasHitThisFrameTeleObj = false;
     function update(_event) {
         hasHitThisFrameTeleObj = false;
-        if (xrViewport.isActive) {
-            rightController.getComponent(f.ComponentTransform).mtxLocal = xrViewport.xrTool.rightController.mtxLocal;
-            leftController.getComponent(f.ComponentTransform).mtxLocal = xrViewport.xrTool.leftController.mtxLocal;
-            if (xrViewport.xrTool.rightController.rayHit)
-                if (xrViewport.xrTool.rightController.rayHit.hit) {
-                    if (xrViewport.xrTool.rightController.rayHit.rigidbodyComponent.typeBody != f.BODY_TYPE.STATIC && xrViewport.xrTool.rightController.rayHit.rigidbodyComponent.node.name != "New Node") {
+        if (xrViewport.xr.xrSession) {
+            if (xrViewport.xr.rightController.rayHit)
+                if (xrViewport.xr.rightController.rayHit.hit) {
+                    if (xrViewport.xr.rightController.rayHit.rigidbodyComponent.typeBody != f.BODY_TYPE.STATIC && xrViewport.xr.rightController.rayHit.rigidbodyComponent.node.name != "New Node") {
                         hasHitThisFrameTeleObj = true;
-                        actualTeleportationObj = xrViewport.xrTool.rightController.rayHit.rigidbodyComponent.node;
+                        actualTeleportationObj = xrViewport.xr.rightController.rayHit.rigidbodyComponent.node;
                         actualTeleportationObj.getComponent(f.ComponentMaterial).clrPrimary.a = 1;
                     }
-                    if (xrViewport.xrTool.rightController.rayHit.rigidbodyComponent.typeBody != f.BODY_TYPE.STATIC && xrViewport.xrTool.rightController.rayHit.rigidbodyComponent.node.name == "New Node") {
-                        if (xrViewport.xrTool.rightController.rayHit.rigidbodyComponent.node != actualThrowObject && actualThrowObject != null)
+                    if (xrViewport.xr.rightController.rayHit.rigidbodyComponent.typeBody != f.BODY_TYPE.STATIC && xrViewport.xr.rightController.rayHit.rigidbodyComponent.node.name == "New Node") {
+                        if (xrViewport.xr.rightController.rayHit.rigidbodyComponent.node != actualThrowObject && actualThrowObject != null)
                             actualThrowObject.getComponent(f.ComponentMaterial).clrPrimary.a = 0.5;
-                        actualThrowObject = xrViewport.xrTool.rightController.rayHit.rigidbodyComponent.node;
+                        actualThrowObject = xrViewport.xr.rightController.rayHit.rigidbodyComponent.node;
                         actualThrowObject.getComponent(f.ComponentMaterial).clrPrimary.a = 1;
                     }
                 }
-            if (xrViewport.xrTool.leftController.rayHit)
-                if (xrViewport.xrTool.leftController.rayHit.hit) {
-                    if (xrViewport.xrTool.leftController.rayHit.rigidbodyComponent.typeBody != f.BODY_TYPE.STATIC && xrViewport.xrTool.leftController.rayHit.rigidbodyComponent.node.name != "New Node") {
+            if (xrViewport.xr.leftController.rayHit)
+                if (xrViewport.xr.leftController.rayHit.hit) {
+                    if (xrViewport.xr.leftController.rayHit.rigidbodyComponent.typeBody != f.BODY_TYPE.STATIC && xrViewport.xr.leftController.rayHit.rigidbodyComponent.node.name != "New Node") {
                         hasHitThisFrameTeleObj = true;
-                        actualTeleportationObj = xrViewport.xrTool.leftController.rayHit.rigidbodyComponent.node;
+                        actualTeleportationObj = xrViewport.xr.leftController.rayHit.rigidbodyComponent.node;
                         actualTeleportationObj.getComponent(f.ComponentMaterial).clrPrimary.a = 1;
                     }
-                    if (xrViewport.xrTool.leftController.rayHit.rigidbodyComponent.typeBody != f.BODY_TYPE.STATIC && xrViewport.xrTool.leftController.rayHit.rigidbodyComponent.node.name == "New Node") {
-                        if (xrViewport.xrTool.leftController.rayHit.rigidbodyComponent.node != actualThrowObject && actualThrowObject != null)
+                    if (xrViewport.xr.leftController.rayHit.rigidbodyComponent.typeBody != f.BODY_TYPE.STATIC && xrViewport.xr.leftController.rayHit.rigidbodyComponent.node.name == "New Node") {
+                        if (xrViewport.xr.leftController.rayHit.rigidbodyComponent.node != actualThrowObject && actualThrowObject != null)
                             actualThrowObject.getComponent(f.ComponentMaterial).clrPrimary.a = 0.5;
-                        actualThrowObject = xrViewport.xrTool.leftController.rayHit.rigidbodyComponent.node;
+                        actualThrowObject = xrViewport.xr.leftController.rayHit.rigidbodyComponent.node;
                         actualThrowObject.getComponent(f.ComponentMaterial).clrPrimary.a = 1;
                     }
                 }
@@ -174,7 +183,7 @@ var VRIntegration;
         if (actualTeleportationObj) {
             let newPos = f.Vector3.DIFFERENCE(cmpCamera.mtxWorld.translation, actualTeleportationObj.getComponent(f.ComponentTransform).mtxLocal.translation);
             newPos.y -= 0.5;
-            xrViewport.xrTool.setNewXRRigidtransform(newPos);
+            xrViewport.xr.setNewXRRigidtransform(newPos);
             actualTeleportationObj.getComponent(f.ComponentMaterial).clrPrimary.a = 0.5;
             actualTeleportationObj = null;
         }
