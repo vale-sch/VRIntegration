@@ -113,8 +113,6 @@ var VRIntegration;
             //set controllers matrix information to component transform from node controller made in FUDGE Editor
             rightController.getComponent(f.ComponentTransform).mtxLocal = xrViewport.xr.rightController.mtxLocal;
             leftController.getComponent(f.ComponentTransform).mtxLocal = xrViewport.xr.leftController.mtxLocal;
-            xrViewport.xr.leftController.isRayHitInfo = true;
-            xrViewport.xr.rightController.isRayHitInfo = true;
             //set controllers buttons events
             xrViewport.xr.xrSession.addEventListener("squeeze", onSqueeze);
             xrViewport.xr.xrSession.addEventListener("selectstart", onSelectStart);
@@ -134,31 +132,31 @@ var VRIntegration;
     function update(_event) {
         hasHitThisFrameTeleObj = false;
         if (xrViewport.xr.xrSession) {
-            if (xrViewport.xr.rightController.rayHit)
-                if (xrViewport.xr.rightController.rayHit.hit) {
-                    if (xrViewport.xr.rightController.rayHit.rigidbodyComponent.typeBody != f.BODY_TYPE.STATIC && xrViewport.xr.rightController.rayHit.rigidbodyComponent.node.name != "New Node") {
+            if (xrViewport.xr.rayHitInfoRight)
+                if (xrViewport.xr.rayHitInfoRight.hit) {
+                    if (xrViewport.xr.rayHitInfoRight.rigidbodyComponent.typeBody != f.BODY_TYPE.STATIC && xrViewport.xr.rayHitInfoRight.rigidbodyComponent.node.name != "New Node") {
                         hasHitThisFrameTeleObj = true;
-                        actualTeleportationObj = xrViewport.xr.rightController.rayHit.rigidbodyComponent.node;
+                        actualTeleportationObj = xrViewport.xr.rayHitInfoRight.rigidbodyComponent.node;
                         actualTeleportationObj.getComponent(f.ComponentMaterial).clrPrimary.a = 1;
                     }
-                    if (xrViewport.xr.rightController.rayHit.rigidbodyComponent.typeBody != f.BODY_TYPE.STATIC && xrViewport.xr.rightController.rayHit.rigidbodyComponent.node.name == "New Node") {
-                        if (xrViewport.xr.rightController.rayHit.rigidbodyComponent.node != actualThrowObject && actualThrowObject != null)
+                    if (xrViewport.xr.rayHitInfoRight.rigidbodyComponent.typeBody != f.BODY_TYPE.STATIC && xrViewport.xr.rayHitInfoRight.rigidbodyComponent.node.name == "New Node") {
+                        if (xrViewport.xr.rayHitInfoRight.rigidbodyComponent.node != actualThrowObject && actualThrowObject != null)
                             actualThrowObject.getComponent(f.ComponentMaterial).clrPrimary.a = 0.5;
-                        actualThrowObject = xrViewport.xr.rightController.rayHit.rigidbodyComponent.node;
+                        actualThrowObject = xrViewport.xr.rayHitInfoRight.rigidbodyComponent.node;
                         actualThrowObject.getComponent(f.ComponentMaterial).clrPrimary.a = 1;
                     }
                 }
-            if (xrViewport.xr.leftController.rayHit)
-                if (xrViewport.xr.leftController.rayHit.hit) {
-                    if (xrViewport.xr.leftController.rayHit.rigidbodyComponent.typeBody != f.BODY_TYPE.STATIC && xrViewport.xr.leftController.rayHit.rigidbodyComponent.node.name != "New Node") {
+            if (xrViewport.xr.rayHitInfoLeft)
+                if (xrViewport.xr.rayHitInfoLeft.hit) {
+                    if (xrViewport.xr.rayHitInfoLeft.rigidbodyComponent.typeBody != f.BODY_TYPE.STATIC && xrViewport.xr.rayHitInfoLeft.rigidbodyComponent.node.name != "New Node") {
                         hasHitThisFrameTeleObj = true;
-                        actualTeleportationObj = xrViewport.xr.leftController.rayHit.rigidbodyComponent.node;
+                        actualTeleportationObj = xrViewport.xr.rayHitInfoLeft.rigidbodyComponent.node;
                         actualTeleportationObj.getComponent(f.ComponentMaterial).clrPrimary.a = 1;
                     }
-                    if (xrViewport.xr.leftController.rayHit.rigidbodyComponent.typeBody != f.BODY_TYPE.STATIC && xrViewport.xr.leftController.rayHit.rigidbodyComponent.node.name == "New Node") {
-                        if (xrViewport.xr.leftController.rayHit.rigidbodyComponent.node != actualThrowObject && actualThrowObject != null)
+                    if (xrViewport.xr.rayHitInfoLeft.rigidbodyComponent.typeBody != f.BODY_TYPE.STATIC && xrViewport.xr.rayHitInfoLeft.rigidbodyComponent.node.name == "New Node") {
+                        if (xrViewport.xr.rayHitInfoLeft.rigidbodyComponent.node != actualThrowObject && actualThrowObject != null)
                             actualThrowObject.getComponent(f.ComponentMaterial).clrPrimary.a = 0.5;
-                        actualThrowObject = xrViewport.xr.leftController.rayHit.rigidbodyComponent.node;
+                        actualThrowObject = xrViewport.xr.rayHitInfoLeft.rigidbodyComponent.node;
                         actualThrowObject.getComponent(f.ComponentMaterial).clrPrimary.a = 1;
                     }
                 }

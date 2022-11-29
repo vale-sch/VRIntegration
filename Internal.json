@@ -29,20 +29,6 @@
       "latitudes": 30
     }
   },
-  "Material|2022-11-08T16:38:11.785Z|35904": {
-    "ƒ.Material": {
-      "name": "ShaderFlatTextured",
-      "idResource": "Material|2022-11-08T16:38:11.785Z|35904",
-      "shader": "ShaderFlatTextured",
-      "coat": {
-        "ƒ.CoatRemissiveTextured": {
-          "color": "[1, 1, 1, 1]",
-          "diffuse": 1,
-          "specular": 0
-        }
-      }
-    }
-  },
   "MeshTorus|2022-11-09T13:26:27.251Z|15901": {
     "ƒ.MeshTorus": {
       "idResource": "MeshTorus|2022-11-09T13:26:27.251Z|15901",
@@ -164,7 +150,7 @@
                     },
                     "light": {
                       "ƒ.LightSpot": {
-                        "color": "[1, 0, 0, 1]"
+                        "color": "[1, 1, 1, 1]"
                       }
                     },
                     "Component": {
@@ -181,7 +167,7 @@
                     },
                     "light": {
                       "ƒ.LightDirectional": {
-                        "color": "[0, 1, 0.06666666666666667, 1]"
+                        "color": "[1, 1, 1, 1]"
                       }
                     },
                     "Component": {
@@ -1990,7 +1976,7 @@
                 {
                   "ƒ.ComponentMaterial": {
                     "sortForAlpha": false,
-                    "clrPrimary": "[1, 1, 1, 0.35]",
+                    "clrPrimary": "[0.5607843137254902, 0.5607843137254902, 0.5607843137254902, 0.41]",
                     "clrSecondary": "[1, 1, 1, 1]",
                     "pivot": {
                       "translation": "[0, 0]",
@@ -2000,7 +1986,7 @@
                     "Component": {
                       "active": true
                     },
-                    "idMaterial": "Material|2022-11-08T16:38:11.785Z|35904"
+                    "idMaterial": "Material|2022-11-16T15:44:16.562Z|68520"
                   }
                 }
               ],
@@ -2226,9 +2212,9 @@
                         "ƒ.ComponentMesh": {
                           "idMesh": "MeshSphere|2022-10-26T13:26:59.200Z|35340",
                           "pivot": {
-                            "translation": "[0, 1, 15]",
+                            "translation": "[0, 0, 15]",
                             "rotation": "[0, 0, 0]",
-                            "scaling": "[0.4999999701976776, 0.4999999701976776, 0.5]"
+                            "scaling": "[0.5, 0.5, 0.5]"
                           },
                           "Component": {
                             "active": true
@@ -2240,7 +2226,7 @@
                       {
                         "ƒ.ComponentMaterial": {
                           "sortForAlpha": false,
-                          "clrPrimary": "[0, 1, 0.06666666666666667, 0.4]",
+                          "clrPrimary": "[1, 1, 1, 0.42]",
                           "clrSecondary": "[1, 1, 1, 1]",
                           "pivot": {
                             "translation": "[0, 0]",
@@ -2258,7 +2244,7 @@
                       {
                         "ƒ.ComponentTransform": {
                           "local": {
-                            "translation": "[0, 0, 0]",
+                            "translation": "[0, 1, 0]",
                             "rotation": "[0, 0, 0]",
                             "scaling": "[1, 1, 1]"
                           },
@@ -2283,9 +2269,9 @@
                           "isTrigger": false,
                           "id": 5,
                           "pivot": {
-                            "translation": "[0, 1, 15]",
+                            "translation": "[0, 0, 15]",
                             "rotation": "[0, 0, 0]",
-                            "scaling": "[0.4999999701976776, 0.4999999701976776, 0.5]"
+                            "scaling": "[0.5, 0.5, 0.5]"
                           },
                           "Component": {
                             "active": true
@@ -2815,10 +2801,32 @@
               }
             ]
           }
+        },
+        {
+          "ƒ.Node": {
+            "name": "test",
+            "active": true,
+            "components": {},
+            "children": []
+          }
         }
       ],
       "idResource": "Graph|2022-10-16T12:29:07.468Z|66213",
       "type": "Graph"
+    }
+  },
+  "Material|2022-11-28T13:42:46.754Z|65846": {
+    "ƒ.Material": {
+      "name": "ShaderGouraudTextured",
+      "idResource": "Material|2022-11-28T13:42:46.754Z|65846",
+      "shader": "ShaderGouraudTextured",
+      "coat": {
+        "ƒ.CoatRemissiveTextured": {
+          "color": "[1, 1, 1, 1]",
+          "diffuse": 1,
+          "specular": 0
+        }
+      }
     }
   }
 }
