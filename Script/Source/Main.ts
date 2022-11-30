@@ -17,7 +17,7 @@ namespace Script {
     }
     let canvas: HTMLCanvasElement = <HTMLCanvasElement>document.querySelector("canvas");
     cmpCamera = graph.getChildrenByName("Camera")[0].getComponent(f.ComponentCamera);
-
+    cmpCamera.clrBackground = f.Color.CSS("lightsteelblue", 0.25);
     xrViewport.initialize("Viewport", graph, cmpCamera, canvas);
 
 
