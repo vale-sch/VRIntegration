@@ -89,7 +89,7 @@ var Script;
         });
     }
     function update(_event) {
-        // ƒ.Physics.simulate();  // if physics is included and used
+        // f.Physics.simulate();  // if physics is included and used
         xrViewport.draw();
         // f.AudioManager.default.update();
     }

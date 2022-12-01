@@ -18,6 +18,7 @@ namespace Script {
     let canvas: HTMLCanvasElement = <HTMLCanvasElement>document.querySelector("canvas");
     cmpCamera = graph.getChildrenByName("Camera")[0].getComponent(f.ComponentCamera);
     cmpCamera.clrBackground = f.Color.CSS("lightsteelblue", 0.25);
+
     xrViewport.initialize("Viewport", graph, cmpCamera, canvas);
 
 
@@ -57,8 +58,9 @@ namespace Script {
     }
     );
   }
+
   function update(_event: Event): void {
-    // ƒ.Physics.simulate();  // if physics is included and used
+    // f.Physics.simulate();  // if physics is included and used
     xrViewport.draw();
     // f.AudioManager.default.update();
   }
