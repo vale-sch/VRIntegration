@@ -5,6 +5,7 @@ namespace Script {
   let xrViewport: f.XRViewport = new f.XRViewport();
   let graph: f.Graph = null;
   let cmpCamera: f.ComponentCamera = null;
+
   window.addEventListener("load", init);
 
   async function init() {
@@ -25,6 +26,8 @@ namespace Script {
     xrViewport.draw();
     f.Loop.addEventListener(f.EVENT.LOOP_FRAME, update);
     f.Loop.start(f.LOOP_MODE.FRAME_REQUEST);
+
+
 
     checkForVRSupport();
   }
@@ -47,8 +50,9 @@ namespace Script {
 
     enterXRButton.addEventListener("click", async function () {
       //initalizes xr session 
-      await xrViewport.initializeXR("immersive-vr", "local", false);
+      await xrViewport.initializeXR("immersive-vr", "local", true);
 
+      initializeRays();
       //stop normal loop of winodws.animationFrame
       f.Loop.stop();
       //set xr transform to matrix from ComponentCamera -> xr transform = camera transform
@@ -59,9 +63,18 @@ namespace Script {
     );
   }
 
+  function initializeRays(): void {
+    let pickableObjects: f.Node[] = graph.getChildrenByName("CubeContainer")[0].getChildren();
+    let rightRayNode = graph.getChildrenByName("raysContainer")[0].getChild(0);
+    let leftRayNode = graph.getChildrenByName("raysContainer")[0].getChild(1);
+    rightRayNode.addComponent(new RayHelper(xrViewport, xrViewport.xr.rightController, 50, pickableObjects));
+    leftRayNode.addComponent(new RayHelper(xrViewport, xrViewport.xr.leftController, 50, pickableObjects));
+  }
+
   function update(_event: Event): void {
     // f.Physics.simulate();  // if physics is included and used
     xrViewport.draw();
+
     // f.AudioManager.default.update();
   }
 }
