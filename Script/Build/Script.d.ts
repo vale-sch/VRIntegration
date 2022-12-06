@@ -15,8 +15,9 @@ declare namespace Script {
     class RayHelper extends f.ComponentScript {
         private xrViewport;
         private controllerTransform;
-        private lengthRay;
+        private maxLength;
         private pickableObjects;
+        private pick;
         constructor(_xrViewport: f.XRViewport, _controllerTransform: f.ComponentTransform, _lengthRay: number, _pickableObjects: f.Node[]);
         hndEvent: (_event: Event) => void;
         private computeRay;

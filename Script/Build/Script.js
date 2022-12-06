@@ -79,12 +79,12 @@ var Script;
         document.body.appendChild(enterXRButton);
         enterXRButton.addEventListener("click", async function () {
             //initalizes xr session 
-            await xrViewport.initializeXR("immersive-vr", "local", true);
-            initializeRays();
+            await xrViewport.initializeVR("immersive-vr", "local", true);
+            //initializeRays();
             //stop normal loop of winodws.animationFrame
             f.Loop.stop();
             //set xr transform to matrix from ComponentCamera -> xr transform = camera transform
-            xrViewport.xr.setNewXRRigidtransform(f.Vector3.DIFFERENCE(f.Vector3.ZERO(), cmpCamera.mtxWorld.translation));
+            xrViewport.vr.setNewXRRigidtransform(f.Vector3.DIFFERENCE(f.Vector3.ZERO(), cmpCamera.mtxWorld.translation));
             //start xrSession.animationFrame instead of window.animationFrame, your xr-session is ready to go!
             f.Loop.start(f.LOOP_MODE.FRAME_REQUEST_XR);
         });
@@ -93,13 +93,15 @@ var Script;
         let pickableObjects = graph.getChildrenByName("CubeContainer")[0].getChildren();
         let rightRayNode = graph.getChildrenByName("raysContainer")[0].getChild(0);
         let leftRayNode = graph.getChildrenByName("raysContainer")[0].getChild(1);
-        rightRayNode.addComponent(new Script.RayHelper(xrViewport, xrViewport.xr.rightController, 50, pickableObjects));
-        leftRayNode.addComponent(new Script.RayHelper(xrViewport, xrViewport.xr.leftController, 50, pickableObjects));
+        rightRayNode.addComponent(new Script.RayHelper(xrViewport, xrViewport.vr.rightController, 50, pickableObjects));
+        leftRayNode.addComponent(new Script.RayHelper(xrViewport, xrViewport.vr.leftController, 50, pickableObjects));
     }
     function update(_event) {
-        // f.Physics.simulate();  // if physics is included and used
+        let pickableObjects = graph.getChildrenByName("CubeContainer")[0].getChildren();
+        let ray = new f.Ray(new f.Vector3(0, 0, 1), new f.Vector3(1, 0, -1), 0.1);
+        let picker = f.Picker.pickRay(pickableObjects, ray, 0, 100000000000000000);
+        // console.log(picker.length);
         xrViewport.draw();
-        // f.AudioManager.default.update();
     }
 })(Script || (Script = {}));
 var Script;
@@ -112,13 +114,14 @@ var Script;
         // Properties may be mutated by users in the editor via the automatically created user interface
         xrViewport = null;
         controllerTransform;
-        lengthRay;
+        maxLength;
         pickableObjects;
+        pick = null;
         constructor(_xrViewport, _controllerTransform, _lengthRay, _pickableObjects) {
             super();
             this.xrViewport = _xrViewport;
             this.controllerTransform = _controllerTransform;
-            this.lengthRay = _lengthRay;
+            this.maxLength = _lengthRay;
             this.pickableObjects = _pickableObjects;
             // Don't start when running in editor
             if (f.Project.mode == f.MODE.EDITOR)
@@ -144,25 +147,36 @@ var Script;
                     break;
             }
         };
-        computeRay = (_rayTransform, rayNode) => {
-            let vecZCntrl = _rayTransform.mtxLocal.getZ();
-            let ray = new f.Ray(new f.Vector3(-vecZCntrl.x, -vecZCntrl.y, -vecZCntrl.z), _rayTransform.mtxLocal.translation, this.lengthRay);
-            rayNode.getComponent(f.ComponentTransform).mtxLocal = _rayTransform.mtxLocal;
-            rayNode.getComponent(f.ComponentMesh).mtxPivot.scaling = new f.Vector3(0.1, this.lengthRay, 0.1);
-            rayNode.getComponent(f.ComponentMesh).mtxPivot.translation = new f.Vector3(0, 0, -this.lengthRay / 2);
-            let picker = f.Picker.pickRay(this.pickableObjects, ray, 0, this.lengthRay);
+        computeRay = (_webXRControllerTransform, rayNode) => {
+            rayNode.getComponent(f.ComponentTransform).mtxLocal = _webXRControllerTransform.mtxLocal;
+            let forward;
+            forward = f.Vector3.Z();
+            forward.transform(rayNode.mtxWorld, false);
+            let ray = new f.Ray(new f.Vector3(0, 0, -1), new f.Vector3(2, 0, 1), 0.1);
+            // let ray: f.Ray = new f.Ray(new f.Vector3(forward.x * 10000, forward.y * 10000, forward.z * 10000), rayNode.mtxLocal.translation, 0.1);
+            if (!this.pick) {
+                rayNode.getComponent(f.ComponentMesh).mtxPivot.scaling = new f.Vector3(0.1, this.maxLength, 0.1);
+                rayNode.getComponent(f.ComponentMesh).mtxPivot.translation = new f.Vector3(0, 0, -this.maxLength / 2);
+            }
+            else {
+                let distance = ray.getDistance(this.pick.mtxLocal.translation);
+                rayNode.getComponent(f.ComponentMesh).mtxPivot.scaling = new f.Vector3(0.1, distance.magnitude, 0.1);
+                console.log(rayNode.mtxLocal.translation);
+                rayNode.getComponent(f.ComponentMesh).mtxPivot.translation = new f.Vector3(0, 0, -distance.magnitude / 2);
+            }
+            let picker = f.Picker.pickRay(this.pickableObjects, ray, 0, 100000000000000000);
+            picker.sort((a, b) => a.zBuffer < b.zBuffer ? -1 : 1);
             picker.forEach(element => {
-                console.log("R: " + element);
+                console.log(element.node.name);
             });
-            // let crc2: CanvasRenderingContext2D = xrViewport.context;
-            // console.log(crc2);
-            // crc2.moveTo(0, 0);
-            // crc2.lineTo(600, 600);
-            // crc2.strokeStyle = "white";
-            // crc2.stroke();
+            if (picker.length > 0) {
+                this.pick = picker[0].node;
+            }
+            else
+                this.pick = null;
         };
         update = () => {
-            if (this.xrViewport.xr.xrSession)
+            if (this.xrViewport.vr.xrSession)
                 this.computeRay(this.controllerTransform, this.node);
         };
     }

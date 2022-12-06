@@ -50,13 +50,13 @@ namespace Script {
 
     enterXRButton.addEventListener("click", async function () {
       //initalizes xr session 
-      await xrViewport.initializeXR("immersive-vr", "local", true);
+      await xrViewport.initializeVR("immersive-vr", "local", true);
 
-      initializeRays();
+      //initializeRays();
       //stop normal loop of winodws.animationFrame
       f.Loop.stop();
       //set xr transform to matrix from ComponentCamera -> xr transform = camera transform
-      xrViewport.xr.setNewXRRigidtransform(f.Vector3.DIFFERENCE(f.Vector3.ZERO(), cmpCamera.mtxWorld.translation));
+      xrViewport.vr.setNewXRRigidtransform(f.Vector3.DIFFERENCE(f.Vector3.ZERO(), cmpCamera.mtxWorld.translation));
       //start xrSession.animationFrame instead of window.animationFrame, your xr-session is ready to go!
       f.Loop.start(f.LOOP_MODE.FRAME_REQUEST_XR);
     }
@@ -67,14 +67,18 @@ namespace Script {
     let pickableObjects: f.Node[] = graph.getChildrenByName("CubeContainer")[0].getChildren();
     let rightRayNode = graph.getChildrenByName("raysContainer")[0].getChild(0);
     let leftRayNode = graph.getChildrenByName("raysContainer")[0].getChild(1);
-    rightRayNode.addComponent(new RayHelper(xrViewport, xrViewport.xr.rightController, 50, pickableObjects));
-    leftRayNode.addComponent(new RayHelper(xrViewport, xrViewport.xr.leftController, 50, pickableObjects));
+    rightRayNode.addComponent(new RayHelper(xrViewport, xrViewport.vr.rightController, 50, pickableObjects));
+    leftRayNode.addComponent(new RayHelper(xrViewport, xrViewport.vr.leftController, 50, pickableObjects));
   }
 
   function update(_event: Event): void {
-    // f.Physics.simulate();  // if physics is included and used
+    let pickableObjects: f.Node[] = graph.getChildrenByName("CubeContainer")[0].getChildren();
+
+    let ray: f.Ray = new f.Ray(new f.Vector3(0, 0, 1), new f.Vector3(1, 0, -1), 0.1);
+
+    let picker: f.Pick[] = f.Picker.pickRay(pickableObjects, ray, 0, 100000000000000000);
+    // console.log(picker.length);
     xrViewport.draw();
 
-    // f.AudioManager.default.update();
   }
 }
