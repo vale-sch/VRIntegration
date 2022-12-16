@@ -1,103 +1,103 @@
 {
-    "liveServer.settings.https": {
-        "enable": true, //set it true to enable the feature.
-        "cert": "C:\\Users\\valiv\\servercertificate\\server.crt", //full path of the certificate
-        "key": "C:\\Users\\valiv\\servercertificate\\server.key", //full path of the private key
-        "passphrase": "2545"
-        },
-    "liveServer.settings.port": 7701,
-    "todohighlight.keywords": [
-        {
-            "text": "todo:",
-            "color": "#000000",
-            "backgroundColor": "DarkKhaki",
-            "overviewRulerColor": "DarkKhaki",
-            "border": "1px solid DarkKhaki",
-            "borderRadius": "3px",
-            "isWholeLine": false
-        },
-        {
-            "text": "note:",
-            "color": "#000000",
-            "backgroundColor": "#72824E",
-            "overviewRulerColor": "#72824E",
-            "border": "1px solid #72824E",
-            "borderRadius": "3px",
-            "isWholeLine": false
-        },
-        {
-            "text": "System.debug",
-            "color": "#000000",
-            "backgroundColor": "STEELBLUE",
-            "overviewRulerColor": "STEELBLUE",
-            "border": "1px solid STEELBLUE",
-            "borderRadius": "3px",
-            "isWholeLine": false
-        },
-        {
-            "text": "system.debug",
-            "color": "#000000",
-            "backgroundColor": "STEELBLUE",
-            "overviewRulerColor": "STEELBLUE",
-            "border": "1px solid STEELBLUE",
-            "borderRadius": "3px",
-            "isWholeLine": false
-        },
-        {
-            "text": "console.log",
-            "color": "#000000",
-            "backgroundColor": "STEELBLUE",
-            "overviewRulerColor": "STEELBLUE",
-            "border": "1px solid STEELBLUE",
-            "borderRadius": "3px",
-            "isWholeLine": false
-        },
-        {
-            "text": "|DEBUG|",
-            "color": "#000000",
-            "backgroundColor": "#72848A",
-            "overviewRulerColor": "#72848A",
-            "border": "1px solid #72848A",
-            "borderRadius": "3px",
-            "isWholeLine": true
-        },
-        {
-            "text": "attention:",
-            "color": "white",
-            "backgroundColor": "red",
-            "border": "1px solid red",
-            "borderRadius": "3px",
-            "isWholeLine": false
-        },
-        {
-            "text": "debug:",
-            "color": "white",
-            "backgroundColor": "red",
-            "border": "1px solid red",
-            "borderRadius": "3px",
-            "isWholeLine": false
-        }
-    ],
-    "todohighlight.include": [
-        "**/*.js",
-        "**/*.jsx",
-        "**/*.ts",
-        "**/*.tsx",
-        "**/*.html",
-        "**/*.php",
-        "**/*.css",
-        "**/*.scss"
-    ],
-    "todohighlight.exclude": [
-        "**/node_modules/**",
-        "**/bower_components/**",
-        "**/dist/**",
-        "**/build/**",
-        "**/.vscode/**",
-        "**/.github/**",
-        "**/_output/**",
-        "**/*.min.*",
-        "**/*.map",
-        "**/.next/**"
-    ]
+  "liveServer.settings.https": {
+    "enable": true, //set it true to enable the feature.
+    "cert": "C:\\Users\\valiv\\servercertificate\\server.crt", //full path of the certificate
+    "key": "C:\\Users\\valiv\\servercertificate\\server.key", //full path of the private key
+    "passphrase": "2545"
+  },
+  "liveServer.settings.port": 7702,
+  "todohighlight.keywords": [
+    {
+      "text": "todo:",
+      "color": "#000000",
+      "backgroundColor": "DarkKhaki",
+      "overviewRulerColor": "DarkKhaki",
+      "border": "1px solid DarkKhaki",
+      "borderRadius": "3px",
+      "isWholeLine": false
+    },
+    {
+      "text": "note:",
+      "color": "#000000",
+      "backgroundColor": "#72824E",
+      "overviewRulerColor": "#72824E",
+      "border": "1px solid #72824E",
+      "borderRadius": "3px",
+      "isWholeLine": false
+    },
+    {
+      "text": "System.debug",
+      "color": "#000000",
+      "backgroundColor": "STEELBLUE",
+      "overviewRulerColor": "STEELBLUE",
+      "border": "1px solid STEELBLUE",
+      "borderRadius": "3px",
+      "isWholeLine": false
+    },
+    {
+      "text": "system.debug",
+      "color": "#000000",
+      "backgroundColor": "STEELBLUE",
+      "overviewRulerColor": "STEELBLUE",
+      "border": "1px solid STEELBLUE",
+      "borderRadius": "3px",
+      "isWholeLine": false
+    },
+    {
+      "text": "console.log",
+      "color": "#000000",
+      "backgroundColor": "STEELBLUE",
+      "overviewRulerColor": "STEELBLUE",
+      "border": "1px solid STEELBLUE",
+      "borderRadius": "3px",
+      "isWholeLine": false
+    },
+    {
+      "text": "|DEBUG|",
+      "color": "#000000",
+      "backgroundColor": "#72848A",
+      "overviewRulerColor": "#72848A",
+      "border": "1px solid #72848A",
+      "borderRadius": "3px",
+      "isWholeLine": true
+    },
+    {
+      "text": "attention:",
+      "color": "white",
+      "backgroundColor": "red",
+      "border": "1px solid red",
+      "borderRadius": "3px",
+      "isWholeLine": false
+    },
+    {
+      "text": "debug:",
+      "color": "white",
+      "backgroundColor": "red",
+      "border": "1px solid red",
+      "borderRadius": "3px",
+      "isWholeLine": false
+    }
+  ],
+  "todohighlight.include": [
+    "**/*.js",
+    "**/*.jsx",
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.html",
+    "**/*.php",
+    "**/*.css",
+    "**/*.scss"
+  ],
+  "todohighlight.exclude": [
+    "**/node_modules/**",
+    "**/bower_components/**",
+    "**/dist/**",
+    "**/build/**",
+    "**/.vscode/**",
+    "**/.github/**",
+    "**/_output/**",
+    "**/*.min.*",
+    "**/*.map",
+    "**/.next/**"
+  ]
 }

@@ -638,7 +638,7 @@ declare namespace FudgeCore {
         static uboLightsInfo: {
             [key: string]: UboLightStrucure;
         };
-        private static ubosSetted;
+        private static uboInfos;
         static decorate(_constructor: Function): void;
         static useProgram(this: typeof Shader): void;
         static deleteProgram(this: typeof Shader): void;
@@ -1030,7 +1030,7 @@ declare namespace FudgeCore {
         /**
          * Reset the offscreen framebuffer to the original RenderingContext
          */
-        static resetFrameBuffer(_color?: Color): void;
+        static resetFrameBuffer(_frameBuffer?: WebGLFramebuffer): void;
         /**
          * Retrieve the area on the offscreen-canvas the camera image gets rendered to.
          */
@@ -2335,16 +2335,32 @@ declare namespace FudgeCore {
     }
 }
 declare namespace FudgeCore {
-    class XR extends Component {
-        rightController: ComponentTransform;
-        leftController: ComponentTransform;
-        rayHitInfoRight: RayHitInfo;
-        rayHitInfoLeft: RayHitInfo;
-        xrSession: XRSession;
-        xrReferenceSpace: XRReferenceSpace;
-        setNewXRRigidtransform(_newPos?: Vector3, _newRot?: Vector3): void;
+    /**
+     * @author Valentin Schmidberger, HFU, 2022
+     * VR Component Class, for Session Management, Controller Management and Reference Space Management.
+     */
+    class VRController {
+        cntrlTransform: ComponentTransform;
+        gamePad: Gamepad;
+        thumbstickX: number;
+        thumbstickY: number;
+    }
+    class VR extends Component {
+        rController: VRController;
+        lController: VRController;
+        session: XRSession;
+        referenceSpace: XRReferenceSpace;
+        private actualRigidPos;
+        private oldRigidPos;
+        /**
+         * Sets new position in the reference space of  XR Session, also known as teleportation.
+         */
+        addXRRigidPos(_newPos?: Vector3): void;
+        addXRRigidRot(_newRot?: Vector3): void;
+        /**
+         * Sets controller matrices, gamepad references and thumbsticks movements.
+         */
         setController(_xrFrame: XRFrame): void;
-        setRay(): void;
     }
 }
 declare namespace FudgeCore {
@@ -5307,26 +5323,18 @@ declare namespace FudgeCore {
          */
         setBranch(_branch: Node): void;
         /**
-         * Set the context from canvas.
-         */
-        setContext(_cr2c: CanvasRenderingContext2D): void;
-        /**
          * Retrieve the branch this viewport renders
          */
         getBranch(): Node;
         /**
-         * Retrieve the context from canvas
-         */
-        getContext(): CanvasRenderingContext2D;
-        /**
-         * Set the canvas.
-         */
-        setCanvas(_canvas: HTMLCanvasElement): void;
-        /**
          * Draw this viewport displaying its branch. By default, the transforms in the branch are recalculated first.
-         * Pass `false` if calculation was already done for this frame. TODO: Calculation has been moved to protected method because of XR Session @JIRKA
+         * Pass `false` if calculation was already done for this frame
          */
         draw(_calculateTransforms?: boolean): void;
+        /**
+        * The transforms in the branch are recalculated here.
+        */
+        computeDrawing(_calculateTransforms?: boolean): void;
         /**
          * Calculate the cascade of transforms in this branch and store the results as mtxWorld in the {@link Node}s and {@link ComponentMesh}es
          */
@@ -5385,24 +5393,55 @@ declare namespace FudgeCore {
          * Returns a point in the browser page matching the given point of the viewport
          */
         pointClientToScreen(_client: Vector2): Vector2;
-        /**
-       * Calculation is processed here
-       * Pass `false` if calculation was already done for this frame
-       */
-        protected calculateDrawing(_calculateTransforms?: boolean): void;
     }
 }
 declare namespace FudgeCore {
+    /**
+     * @author Valentin Schmidberger, HFU, 2022
+     * Could be expand with more available modes in the future, until now #immersive session is supported.
+     */
+    enum VR_SESSION_MODE {
+        IMMERSIVE_VR = "immersive-vr"
+    }
+    /**
+     * Different reference vr-spaces available, user has to check if the space is supported with its device.
+     * Could be expand with more available space types in the future, until now #viewer and #local space types are supported.
+     */
+    enum VR_REFERENCE_SPACE {
+        VIEWER = "viewer",
+        LOCAL = "local"
+    }
+    /**
+     * XRViewport (webXR)-extension of Viewport, to display FUDGE content on Head Mounted and AR(not implemted yet) Devices
+     */
     class XRViewport extends Viewport {
+        private static xrCamera;
         private static xrViewportInstance;
-        xr: XR;
+        vr: VR;
         private useController;
         private crc3;
-        static get default(): XRViewport;
         constructor();
-        initializeXR(_xrSessionMode?: XRSessionMode, _xrReferenceSpaceType?: XRReferenceSpaceType, _xrController?: boolean): Promise<void>;
-        draw(_calculateTransforms?: boolean): void;
-        drawXR(_xrFrame?: XRFrame): void;
+        /**
+         * To retrieve private static Instance of xr Viewport, just needed for calling the drawXR Method in {@link Loop}
+         */
+        static get default(): XRViewport;
+        /**
+          * To retrieve private static Camera of xr Viewport, when user will set new rigid transform.
+          */
+        static get camera(): ComponentCamera;
+        /**
+         * The VR Session is initialized here, after XR-Session is setted and FrameRequestXR is called from user, the XRViewport is ready to draw.
+         * Also VR - Controller are initialized, if user sets vrController-boolean.
+         */
+        initializeVR(_vrSessionMode?: VR_SESSION_MODE, _vrReferenceSpaceType?: VR_REFERENCE_SPACE, _vrController?: boolean): Promise<void>;
+        /**
+         * The AR Session could be initialized here. Up till now not implemented.
+         */
+        initializeAR(_xrSessionMode?: XRSessionMode, _xrReferenceSpaceType?: XRReferenceSpaceType): Promise<void>;
+        /**
+         * Real draw method in XR Mode - called from Loop Method {@link Loop} with a static reference of this class.
+         */
+        draw(_calculateTransforms?: boolean, _xrFrame?: XRFrame): void;
     }
 }
 declare namespace FudgeCore {

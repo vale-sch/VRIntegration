@@ -73,7 +73,6 @@ var VRIntegration;
         }
         let canvas = document.querySelector("canvas");
         cmpCamera = graph.getChildrenByName("Camera")[0].getComponent(f.ComponentCamera);
-        setupAudio();
         xrViewport.physicsDebugMode = f.PHYSICS_DEBUGMODE.JOINTS_AND_COLLIDER;
         xrViewport.initialize("Viewport", graph, cmpCamera, canvas);
         rightController = graph.getChildrenByName("rightController")[0];
@@ -83,15 +82,9 @@ var VRIntegration;
         f.Loop.start(f.LOOP_MODE.FRAME_REQUEST);
         checkForVRSupport();
     }
-    function setupAudio() {
-        let cmpListener = new f.ComponentAudioListener();
-        cmpCamera.node.addComponent(cmpListener);
-        f.AudioManager.default.listenTo(graph);
-        f.AudioManager.default.listenWith(cmpCamera.node.getComponent(f.ComponentAudioListener));
-    }
     // check device/browser capabilities for XR Session 
     function checkForVRSupport() {
-        navigator.xr.isSessionSupported("immersive-vr").then((supported) => {
+        navigator.xr.isSessionSupported(f.VR_SESSION_MODE.IMMERSIVE_VR).then((supported) => {
             if (supported)
                 initializeVR();
             else
@@ -107,19 +100,20 @@ var VRIntegration;
         document.body.appendChild(enterXRButton);
         enterXRButton.addEventListener("click", async function () {
             //initalizes xr session 
-            await xrViewport.initializeXR("immersive-vr", "local", true);
+            await xrViewport.initializeVR(f.VR_SESSION_MODE.IMMERSIVE_VR, f.VR_REFERENCE_SPACE.LOCAL, true);
             //stop normal loop of winodws.animationFrame
             f.Loop.stop();
             //set controllers matrix information to component transform from node controller made in FUDGE Editor
-            rightController.getComponent(f.ComponentTransform).mtxLocal = xrViewport.xr.rightController.mtxLocal;
-            leftController.getComponent(f.ComponentTransform).mtxLocal = xrViewport.xr.leftController.mtxLocal;
+            rightController.getComponent(f.ComponentTransform).mtxLocal = xrViewport.vr.rController.cntrlTransform.mtxLocal;
+            leftController.getComponent(f.ComponentTransform).mtxLocal = xrViewport.vr.lController.cntrlTransform.mtxLocal;
             //set controllers buttons events
-            xrViewport.xr.xrSession.addEventListener("squeeze", onSqueeze);
-            xrViewport.xr.xrSession.addEventListener("selectstart", onSelectStart);
-            xrViewport.xr.xrSession.addEventListener("selectend", onSelectEnd);
-            xrViewport.xr.xrSession.addEventListener("end", onEndSession);
-            //set xr transform to matrix from ComponentCamera -> xr transform = camera transform
-            xrViewport.xr.setNewXRRigidtransform(f.Vector3.DIFFERENCE(f.Vector3.ZERO(), cmpCamera.mtxWorld.translation));
+            xrViewport.vr.session.addEventListener("squeeze", onSqueeze);
+            xrViewport.vr.session.addEventListener("selectstart", onSelectStart);
+            xrViewport.vr.session.addEventListener("selectend", onSelectEnd);
+            xrViewport.vr.session.addEventListener("end", onEndSession);
+            //set xr rigid transform to rot&pos of ComponentCamera
+            xrViewport.vr.addXRRigidPos(cmpCamera.mtxWorld.translation);
+            xrViewport.vr.addXRRigidRot(f.Vector3.SCALE(cmpCamera.mtxPivot.rotation, Math.PI / 180));
             //start xrSession.animationFrame instead of window.animationFrame, your xr-session is ready to go!
             f.Loop.start(f.LOOP_MODE.FRAME_REQUEST_XR);
         });
@@ -131,32 +125,36 @@ var VRIntegration;
     let hasHitThisFrameTeleObj = false;
     function update(_event) {
         hasHitThisFrameTeleObj = false;
-        if (xrViewport.xr.xrSession) {
-            if (xrViewport.xr.rayHitInfoRight)
-                if (xrViewport.xr.rayHitInfoRight.hit) {
-                    if (xrViewport.xr.rayHitInfoRight.rigidbodyComponent.typeBody != f.BODY_TYPE.STATIC && xrViewport.xr.rayHitInfoRight.rigidbodyComponent.node.name != "New Node") {
+        if (xrViewport.vr.session) {
+            let vecZCntrlR = xrViewport.vr.rController.cntrlTransform.mtxLocal.getZ();
+            this.rayHitInfoRight = FudgeCore.Physics.raycast(xrViewport.vr.rController.cntrlTransform.mtxLocal.translation, new FudgeCore.Vector3(-vecZCntrlR.x, -vecZCntrlR.y, -vecZCntrlR.z), 80, true);
+            let vecZCntrlL = xrViewport.vr.lController.cntrlTransform.mtxLocal.getZ();
+            this.rayHitInfoLeft = FudgeCore.Physics.raycast(xrViewport.vr.lController.cntrlTransform.mtxLocal.translation, new FudgeCore.Vector3(-vecZCntrlL.x, -vecZCntrlL.y, -vecZCntrlL.z), 80, true);
+            if (this.rayHitInfoRight)
+                if (this.rayHitInfoRight.hit) {
+                    if (this.rayHitInfoRight.rigidbodyComponent.typeBody != f.BODY_TYPE.STATIC && this.rayHitInfoRight.rigidbodyComponent.node.name != "New Node") {
                         hasHitThisFrameTeleObj = true;
-                        actualTeleportationObj = xrViewport.xr.rayHitInfoRight.rigidbodyComponent.node;
+                        actualTeleportationObj = this.rayHitInfoRight.rigidbodyComponent.node;
                         actualTeleportationObj.getComponent(f.ComponentMaterial).clrPrimary.a = 1;
                     }
-                    if (xrViewport.xr.rayHitInfoRight.rigidbodyComponent.typeBody != f.BODY_TYPE.STATIC && xrViewport.xr.rayHitInfoRight.rigidbodyComponent.node.name == "New Node") {
-                        if (xrViewport.xr.rayHitInfoRight.rigidbodyComponent.node != actualThrowObject && actualThrowObject != null)
+                    if (this.rayHitInfoRight.rigidbodyComponent.typeBody != f.BODY_TYPE.STATIC && this.rayHitInfoRight.rigidbodyComponent.node.name == "New Node") {
+                        if (this.rayHitInfoRight.rigidbodyComponent.node != actualThrowObject && actualThrowObject != null)
                             actualThrowObject.getComponent(f.ComponentMaterial).clrPrimary.a = 0.5;
-                        actualThrowObject = xrViewport.xr.rayHitInfoRight.rigidbodyComponent.node;
+                        actualThrowObject = this.rayHitInfoRight.rigidbodyComponent.node;
                         actualThrowObject.getComponent(f.ComponentMaterial).clrPrimary.a = 1;
                     }
                 }
-            if (xrViewport.xr.rayHitInfoLeft)
-                if (xrViewport.xr.rayHitInfoLeft.hit) {
-                    if (xrViewport.xr.rayHitInfoLeft.rigidbodyComponent.typeBody != f.BODY_TYPE.STATIC && xrViewport.xr.rayHitInfoLeft.rigidbodyComponent.node.name != "New Node") {
+            if (this.rayHitInfoLeft)
+                if (this.rayHitInfoLeft.hit) {
+                    if (this.rayHitInfoLeft.rigidbodyComponent.typeBody != f.BODY_TYPE.STATIC && this.rayHitInfoLeft.rigidbodyComponent.node.name != "New Node") {
                         hasHitThisFrameTeleObj = true;
-                        actualTeleportationObj = xrViewport.xr.rayHitInfoLeft.rigidbodyComponent.node;
+                        actualTeleportationObj = this.rayHitInfoLeft.rigidbodyComponent.node;
                         actualTeleportationObj.getComponent(f.ComponentMaterial).clrPrimary.a = 1;
                     }
-                    if (xrViewport.xr.rayHitInfoLeft.rigidbodyComponent.typeBody != f.BODY_TYPE.STATIC && xrViewport.xr.rayHitInfoLeft.rigidbodyComponent.node.name == "New Node") {
-                        if (xrViewport.xr.rayHitInfoLeft.rigidbodyComponent.node != actualThrowObject && actualThrowObject != null)
+                    if (this.rayHitInfoLeft.rigidbodyComponent.typeBody != f.BODY_TYPE.STATIC && this.rayHitInfoLeft.rigidbodyComponent.node.name == "New Node") {
+                        if (this.rayHitInfoLeft.rigidbodyComponent.node != actualThrowObject && actualThrowObject != null)
                             actualThrowObject.getComponent(f.ComponentMaterial).clrPrimary.a = 0.5;
-                        actualThrowObject = xrViewport.xr.rayHitInfoLeft.rigidbodyComponent.node;
+                        actualThrowObject = this.rayHitInfoLeft.rigidbodyComponent.node;
                         actualThrowObject.getComponent(f.ComponentMaterial).clrPrimary.a = 1;
                     }
                 }
@@ -175,13 +173,12 @@ var VRIntegration;
         }
         f.Physics.simulate();
         xrViewport.draw();
-        f.AudioManager.default.update();
     }
     function onSqueeze(_event) {
         if (actualTeleportationObj) {
-            let newPos = f.Vector3.DIFFERENCE(cmpCamera.mtxWorld.translation, actualTeleportationObj.getComponent(f.ComponentTransform).mtxLocal.translation);
-            newPos.y -= 0.5;
-            xrViewport.xr.setNewXRRigidtransform(newPos);
+            let newPos = f.Vector3.DIFFERENCE(actualTeleportationObj.getComponent(f.ComponentTransform).mtxLocal.translation, xrViewport.camera.mtxWorld.translation);
+            newPos.y += 0.5;
+            xrViewport.vr.addXRRigidPos(newPos);
             actualTeleportationObj.getComponent(f.ComponentMaterial).clrPrimary.a = 0.5;
             actualTeleportationObj = null;
         }
@@ -200,7 +197,7 @@ var VRIntegration;
         if (actualThrowObject) {
             if (_event.inputSource.handedness == "right") {
                 actualThrowObject.getComponent(f.ComponentRigidbody).setVelocity(f.Vector3.ZERO());
-                let velocity = f.Vector3.DIFFERENCE(rightController.mtxLocal.translation, cmpCamera.mtxPivot.translation);
+                let velocity = f.Vector3.DIFFERENCE(rightController.mtxLocal.translation, xrViewport.camera.mtxWorld.translation);
                 velocity.scale(20);
                 actualThrowObject.getComponent(f.ComponentRigidbody).addVelocity(velocity);
                 actualThrowObject.getComponent(f.ComponentMaterial).clrPrimary.a = 0.5;
@@ -209,7 +206,7 @@ var VRIntegration;
             }
             else {
                 actualThrowObject.getComponent(f.ComponentRigidbody).setVelocity(f.Vector3.ZERO());
-                let direction = f.Vector3.DIFFERENCE(leftController.mtxLocal.translation, cmpCamera.mtxPivot.translation);
+                let direction = f.Vector3.DIFFERENCE(leftController.mtxLocal.translation, xrViewport.camera.mtxWorld.translation);
                 direction.scale(20);
                 actualThrowObject.getComponent(f.ComponentRigidbody).addVelocity(direction);
                 actualThrowObject.getComponent(f.ComponentMaterial).clrPrimary.a = 0.5;
