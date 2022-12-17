@@ -35,7 +35,7 @@ namespace VRIntegration {
 
     // check device/browser capabilities for XR Session 
     function checkForVRSupport(): void {
-        navigator.xr.isSessionSupported(f.VR_SESSION_MODE.IMMERSIVE_VR).then((supported: boolean) => {
+        navigator.xr.isSessionSupported(f.XR_SESSION_MODE.IMMERSIVE_VR).then((supported: boolean) => {
             if (supported)
                 initializeVR();
             else
@@ -52,7 +52,7 @@ namespace VRIntegration {
 
         enterXRButton.addEventListener("click", async function () {
             //initalizes xr session 
-            await xrViewport.initializeVR(f.VR_SESSION_MODE.IMMERSIVE_VR, f.VR_REFERENCE_SPACE.LOCAL, true);
+            await xrViewport.initializeVR(f.XR_SESSION_MODE.IMMERSIVE_VR, f.XR_REFERENCE_SPACE.LOCAL, true);
 
             //stop normal loop of winodws.animationFrame
             f.Loop.stop();
@@ -61,16 +61,20 @@ namespace VRIntegration {
             rightController.getComponent(f.ComponentTransform).mtxLocal = xrViewport.vr.rController.cntrlTransform.mtxLocal;
             leftController.getComponent(f.ComponentTransform).mtxLocal = xrViewport.vr.lController.cntrlTransform.mtxLocal;
             //set controllers buttons events
-            xrViewport.vr.session.addEventListener("squeeze", onSqueeze);
-            xrViewport.vr.session.addEventListener("selectstart", onSelectStart);
-            xrViewport.vr.session.addEventListener("selectend", onSelectEnd);
-            xrViewport.vr.session.addEventListener("end", onEndSession);
+            xrViewport.session.addEventListener("squeeze", onSqueeze);
+            xrViewport.session.addEventListener("selectstart", onSelectStart);
+            xrViewport.session.addEventListener("selectend", onSelectEnd);
+            xrViewport.session.addEventListener("end", onEndSession);
 
             //set xr rigid transform to rot&pos of ComponentCamera
-            xrViewport.vr.addXRRigidPos(cmpCamera.mtxWorld.translation);
-            xrViewport.vr.addXRRigidRot(f.Vector3.SCALE(cmpCamera.mtxPivot.rotation, Math.PI / 180));
+            xrViewport.vr.setPositionVRRig(cmpCamera.mtxWorld.translation);
+            xrViewport.vr.rotateVRRig(cmpCamera.mtxWorld.rotation);
+
+
+
             //start xrSession.animationFrame instead of window.animationFrame, your xr-session is ready to go!
             f.Loop.start(f.LOOP_MODE.FRAME_REQUEST_XR);
+
         }
         );
     }
@@ -88,7 +92,7 @@ namespace VRIntegration {
 
     function update(_event: Event): void {
         hasHitThisFrameTeleObj = false;
-        if (xrViewport.vr.session) {
+        if (xrViewport.session) {
 
             let vecZCntrlR = xrViewport.vr.rController.cntrlTransform.mtxLocal.getZ();
             this.rayHitInfoRight = FudgeCore.Physics.raycast(xrViewport.vr.rController.cntrlTransform.mtxLocal.translation, new FudgeCore.Vector3(-vecZCntrlR.x, -vecZCntrlR.y, -vecZCntrlR.z), 80, true);
@@ -146,11 +150,11 @@ namespace VRIntegration {
 
     function onSqueeze(_event: XRInputSourceEvent): void {
         if (actualTeleportationObj) {
-            let newPos: f.Vector3 = f.Vector3.DIFFERENCE(actualTeleportationObj.getComponent(f.ComponentTransform).mtxLocal.translation, xrViewport.camera.mtxWorld.translation);
-            newPos.y += 0.5;
-            xrViewport.vr.addXRRigidPos(newPos);
+            xrViewport.vr.setPositionVRRig(actualTeleportationObj.getComponent(f.ComponentTransform).mtxLocal.translation);
+            xrViewport.vr.rotateVRRig(f.Vector3.Y(180));
             actualTeleportationObj.getComponent(f.ComponentMaterial).clrPrimary.a = 0.5;
             actualTeleportationObj = null;
+
         }
     }
 
