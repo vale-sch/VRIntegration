@@ -66,24 +66,17 @@ namespace VRIntegration {
             xrViewport.session.addEventListener("selectend", onSelectEnd);
             xrViewport.session.addEventListener("end", onEndSession);
 
-            //set xr rigid transform to rot&pos of ComponentCamera
-            xrViewport.vr.setPositionVRRig(cmpCamera.mtxWorld.translation);
-            xrViewport.vr.rotateVRRig(cmpCamera.mtxWorld.rotation);
 
+            //initialize xr rig transform to rot&pos of ComponentCamera
+            //hint: maybe you want to set your FUDGE Camera to y= 1.6 because this is the initial height of the xr rig
+            xrViewport.vr.rigPosition = cmpCamera.mtxWorld.translation;
+            xrViewport.vr.rigRotation = cmpCamera.mtxPivot.rotation;
 
-
-            //start xrSession.animationFrame instead of window.animationFrame, your xr-session is ready to go!
+            //starts xr-session.animationFrame instead of window.animationFrame, your xr-session is ready to go!
             f.Loop.start(f.LOOP_MODE.FRAME_REQUEST_XR);
-
         }
         );
     }
-
-
-
-
-
-
     let actualTeleportationObj: f.Node = null;
     let actualThrowObject: f.Node = null;
     let selectPressedRight: boolean = false;
@@ -150,8 +143,9 @@ namespace VRIntegration {
 
     function onSqueeze(_event: XRInputSourceEvent): void {
         if (actualTeleportationObj) {
-            xrViewport.vr.setPositionVRRig(actualTeleportationObj.getComponent(f.ComponentTransform).mtxLocal.translation);
-            xrViewport.vr.rotateVRRig(f.Vector3.Y(180));
+            xrViewport.vr.rigPosition = actualTeleportationObj.getComponent(f.ComponentTransform).mtxLocal.translation;
+            xrViewport.vr.rigRotation = f.Vector3.Y(90);
+
             actualTeleportationObj.getComponent(f.ComponentMaterial).clrPrimary.a = 0.5;
             actualTeleportationObj = null;
 
