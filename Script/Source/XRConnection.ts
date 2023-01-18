@@ -4,7 +4,7 @@ namespace VRIntegration {
 
     let xrViewport: f.XRViewport = new f.XRViewport();
     let graph: f.Graph = null;
-    let cmpCamera: f.ComponentCamera = null;
+    let cmpVRDevice: f.ComponentVRDevice = null;
     let rightController: f.Node = null;
     let leftController: f.Node = null;
     window.addEventListener("load", init);
@@ -18,10 +18,9 @@ namespace VRIntegration {
             return;
         }
         let canvas: HTMLCanvasElement = <HTMLCanvasElement>document.querySelector("canvas");
-        cmpCamera = graph.getChildrenByName("Camera")[0].getComponent(f.ComponentCamera);
-
+        cmpVRDevice = graph.getChildrenByName("Camera")[0].getComponent(f.ComponentVRDevice);
         xrViewport.physicsDebugMode = f.PHYSICS_DEBUGMODE.JOINTS_AND_COLLIDER;
-        xrViewport.initialize("Viewport", graph, cmpCamera, canvas);
+        xrViewport.initialize("Viewport", graph, cmpVRDevice, canvas);
         rightController = graph.getChildrenByName("rightController")[0];
         leftController = graph.getChildrenByName("leftController")[0];
 
@@ -58,8 +57,8 @@ namespace VRIntegration {
             f.Loop.stop();
 
             //set controllers matrix information to component transform from node controller made in FUDGE Editor
-            rightController.getComponent(f.ComponentTransform).mtxLocal = xrViewport.vr.rController.cntrlTransform.mtxLocal;
-            leftController.getComponent(f.ComponentTransform).mtxLocal = xrViewport.vr.lController.cntrlTransform.mtxLocal;
+            rightController.getComponent(f.ComponentTransform).mtxLocal = xrViewport.vrDevice.rightCntrl.cmpTransform.mtxLocal;
+            leftController.getComponent(f.ComponentTransform).mtxLocal = xrViewport.vrDevice.leftCntrl.cmpTransform.mtxLocal;
             //set controllers buttons events
             xrViewport.session.addEventListener("squeeze", onSqueeze);
             xrViewport.session.addEventListener("selectstart", onSelectStart);
@@ -67,10 +66,7 @@ namespace VRIntegration {
             xrViewport.session.addEventListener("end", onEndSession);
 
 
-            //initialize xr rig transform to rot&pos of ComponentCamera
-            //hint: maybe you want to set your FUDGE Camera to y= 1.6 because this is the initial height of the xr rig
-            xrViewport.vr.rigPosition = cmpCamera.mtxWorld.translation;
-            xrViewport.vr.rigRotation = cmpCamera.mtxPivot.rotation;
+
 
             //starts xr-session.animationFrame instead of window.animationFrame, your xr-session is ready to go!
             f.Loop.start(f.LOOP_MODE.FRAME_REQUEST_XR);
@@ -87,10 +83,10 @@ namespace VRIntegration {
         hasHitThisFrameTeleObj = false;
         if (xrViewport.session) {
 
-            let vecZCntrlR = xrViewport.vr.rController.cntrlTransform.mtxLocal.getZ();
-            this.rayHitInfoRight = FudgeCore.Physics.raycast(xrViewport.vr.rController.cntrlTransform.mtxLocal.translation, new FudgeCore.Vector3(-vecZCntrlR.x, -vecZCntrlR.y, -vecZCntrlR.z), 80, true);
-            let vecZCntrlL = xrViewport.vr.lController.cntrlTransform.mtxLocal.getZ();
-            this.rayHitInfoLeft = FudgeCore.Physics.raycast(xrViewport.vr.lController.cntrlTransform.mtxLocal.translation, new FudgeCore.Vector3(-vecZCntrlL.x, -vecZCntrlL.y, -vecZCntrlL.z), 80, true);
+            let vecZCntrlR = xrViewport.vrDevice.rightCntrl.cmpTransform.mtxLocal.getZ();
+            this.rayHitInfoRight = FudgeCore.Physics.raycast(xrViewport.vrDevice.rightCntrl.cmpTransform.mtxLocal.translation, new FudgeCore.Vector3(-vecZCntrlR.x, -vecZCntrlR.y, -vecZCntrlR.z), 80, true);
+            let vecZCntrlL = xrViewport.vrDevice.leftCntrl.cmpTransform.mtxLocal.getZ();
+            this.rayHitInfoLeft = FudgeCore.Physics.raycast(xrViewport.vrDevice.leftCntrl.cmpTransform.mtxLocal.translation, new FudgeCore.Vector3(-vecZCntrlL.x, -vecZCntrlL.y, -vecZCntrlL.z), 80, true);
 
 
             if (this.rayHitInfoRight)
@@ -143,16 +139,14 @@ namespace VRIntegration {
 
     function onSqueeze(_event: XRInputSourceEvent): void {
         if (actualTeleportationObj) {
-            xrViewport.vr.rigPosition = actualTeleportationObj.getComponent(f.ComponentTransform).mtxLocal.translation;
-            xrViewport.vr.rigRotation = f.Vector3.Y(90);
-
+            xrViewport.vrDevice.position = actualTeleportationObj.getComponent(f.ComponentTransform).mtxLocal.translation;
             actualTeleportationObj.getComponent(f.ComponentMaterial).clrPrimary.a = 0.5;
             actualTeleportationObj = null;
-
         }
     }
 
     function onSelectStart(_event: XRInputSourceEvent): void {
+
         if (actualThrowObject) {
             if (_event.inputSource.handedness == "right") {
                 selectPressedRight = true;

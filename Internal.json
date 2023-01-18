@@ -1466,9 +1466,24 @@
             "name": "Camera",
             "active": true,
             "components": {
-              "ComponentCamera": [
+              "ComponentCamera": [],
+              "ComponentTransform": [
                 {
-                  "ƒ.ComponentCamera": {
+                  "ƒ.ComponentTransform": {
+                    "local": {
+                      "translation": "[0, 6, 0]",
+                      "rotation": "[0, 0, 0]",
+                      "scaling": "[1, 1, 1]"
+                    },
+                    "Component": {
+                      "active": true
+                    }
+                  }
+                }
+              ],
+              "ComponentVRDevice": [
+                {
+                  "ƒ.ComponentVRDevice": {
                     "backgroundColor": {
                       "r": 0,
                       "g": 0,
@@ -1479,9 +1494,9 @@
                     "projection": "central",
                     "fieldOfView": 45,
                     "direction": "diagonal",
-                    "aspect": 1.439252336448598,
+                    "aspect": 1.4968847352024923,
                     "pivot": {
-                      "translation": "[0, 1.1000001430511475, -10]",
+                      "translation": "[0, 1.100000023841858, -10]",
                       "rotation": "[0, 0, 0]",
                       "scaling": "[1, 1, 1]"
                     },
@@ -1490,9 +1505,7 @@
                     }
                   }
                 }
-              ],
-              "ComponentMesh": [],
-              "ComponentMaterial": []
+              ]
             },
             "children": []
           }
